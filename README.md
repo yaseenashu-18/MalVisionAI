@@ -1,0 +1,1 @@
+MalVision AI is an AI-powered malware detection platform designed to analyze files and URLs for potential security threats. The system utilizes machine learning techniques to detect malicious behavior and deliver precise, real-time scan results.
