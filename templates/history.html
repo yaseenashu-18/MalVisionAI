@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2><i class="fa-solid fa-clock-rotate-left"></i> Previous Scans</h2>
+
+<div class="table-container fade-in">
+    <table>
+        <thead>
+            <tr>
+                <th><i class="fa-solid fa-file"></i> File Name</th>
+                <th><i class="fa-solid fa-shield-halved"></i> Result</th>
+                <th><i class="fa-solid fa-calendar"></i> Timestamp</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for scan in scans %}
+            <tr>
+                <td>{{ scan.file }}</td>
+                <td>
+                    <span class="result-badge {% if scan.result == 'Malicious' %}danger{% else %}safe{% endif %}"
+                        style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
+                        {{ scan.result }}
+                    </span>
+                </td>
+                <td>{{ scan.time }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MalVisionAI</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+        <div class="globe globe-3"></div>
+    </div>
+
+    <nav class="glass-nav">
+        <div class="nav-logo">
+            <i class="fa-solid fa-shield-virus"></i>
+            <span>MalVisionAI</span>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="/scan" class="nav-item"><i class="fa-solid fa-radar"></i> Scanner</a>
+            <a href="/history" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+            <a href="/about" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
+
+            {% if user %}
+            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: 15px;">
+                <a href="/profile" title="View Profile">
+                    <img src="{{ user.picture }}" alt="User"
+                        style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--primary); transition: transform 0.2s;">
+                </a>
+                <a href="/logout" class="nav-item" style="color: var(--accent-bad);" title="Logout"><i
+                        class="fa-solid fa-right-from-bracket"></i></a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="main-container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="glass-footer">
+        <div class="footer-content">
+            <p>&copy; 2026 MalVisionAI. All rights reserved.</p>
+            <p class="disclaimer">Authorized Use Only. For any issues contact ML SYNDICATE team.</p>
+        </div>
+    </footer>
+
+    <!-- Scanning Overlay -->
+    <div id="scanningOverlay" class="scanning-overlay hidden">
+        <div class="scanner-container">
+            <div class="radar-scan"></div>
+            <div class="scan-line"></div>
+            <div class="scan-text">SCANNING SYSTEM...</div>
+            <div class="scan-progress-bar">
+                <div class="scan-progress-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple script to handle active state of nav links
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-item');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

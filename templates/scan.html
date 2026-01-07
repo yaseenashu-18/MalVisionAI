@@ -1,0 +1,223 @@
+{% extends "base.html" %}
+{% block content %}
+
+<!-- Overlay for Scan Progress -->
+<div id="scanOverlay" class="scan-overlay hidden">
+    <div class="scan-content">
+        <div class="radar-spinner"></div>
+        <h2 class="scan-status-text">Scanning...</h2>
+        <div class="progress-wrapper">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+        <div class="progress-text" id="progressText">0%</div>
+    </div>
+</div>
+
+{% if not result %}
+<!-- LANDING PAGE -->
+<div class="vt-container fade-in">
+    <h1 class="vt-title">Analyze suspicious files, domains, IPs and URLs</h1>
+    <p class="vt-subtitle">Detect malware and other breaches, automatically share them with the security community.</p>
+
+    <div class="vt-interface">
+        <div class="vt-tabs">
+            <button class="vt-tab active" data-tab="file">FILE</button>
+            <button class="vt-tab" data-tab="url">URL</button>
+            <button class="vt-tab" data-tab="search">SEARCH</button>
+        </div>
+
+        <div class="vt-tab-content active" id="tab-file">
+            <form id="scanForm" action="/scan" method="post" enctype="multipart/form-data">
+                <div class="upload-zone" id="dropZone">
+                    <div class="circles-animation">
+                        <div class="circle c1"></div>
+                        <div class="circle c2"></div>
+                        <div class="circle c3"></div>
+                    </div>
+                    <i class="fa-solid fa-file-shield upload-icon-main"></i>
+
+                    <input type="file" name="file" id="fileInput" class="hidden-input" required>
+                    <button type="button" class="btn-choose" onclick="triggerFile()">Choose file</button>
+
+                    <p class="drop-text">or drag and drop here</p>
+                </div>
+            </form>
+        </div>
+
+        <div class="vt-tab-content" id="tab-url">
+            <form id="urlForm" action="/scan" method="post">
+                <div class="placeholder-content">
+                    <i class="fa-solid fa-globe"></i>
+                    <input type="text" name="url" class="vt-input" placeholder="http://www.example.com" required>
+                    <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </form>
+        </div>
+
+        <div class="vt-tab-content" id="tab-search">
+            <div class="placeholder-content">
+                <i class="fa-solid fa-fingerprint"></i>
+                <input type="text" class="vt-input" placeholder="URL, IP address, domain or file hash">
+                <button class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<!-- DETAILED RESULT PAGE -->
+<div class="result-container fade-up">
+    <!-- Header -->
+    <div class="result-header">
+        <div class="file-icon-badge">
+            <i class="fa-solid fa-file-code"></i>
+        </div>
+        <div class="file-summary">
+            <div class="file-name">{{ file_info.name }}</div>
+            <div class="file-meta">{{ file_info.size }} &bull; {{ file_info.type }}</div>
+        </div>
+        <div class="detection-badge {% if result == 'Malicious' %}bad{% else %}good{% endif %}">
+            <div class="detection-score">
+                {% if result == 'Malicious' %}1 / 1{% else %}0 / 1{% endif %}
+            </div>
+            <div class="detection-label">{{ result }}</div>
+        </div>
+    </div>
+
+    <!-- Details Grid -->
+    <div class="details-grid">
+        <div class="detail-section">
+            <h3><i class="fa-solid fa-circle-info"></i> Basic Properties</h3>
+            <div class="detail-row">
+                <span class="label">MD5</span>
+                <span class="value mono">7b8c9d... (hidden)</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">SHA-1</span>
+                <span class="value mono">a1b2c3... (hidden)</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">SHA-256</span>
+                <span class="value mono">{{ file_info.hash }}</span>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3><i class="fa-solid fa-shield-halved"></i> Security Vendors</h3>
+            <div class="vendor-list">
+                <div class="vendor-item">
+                    <span class="vendor-name">MalVisionAI</span>
+                    <span class="vendor-result {% if result == 'Malicious' %}red{% else %}green{% endif %}">
+                        {% if result == 'Malicious' %}
+                        <i class="fa-solid fa-bug"></i> Malicious
+                        {% else %}
+                        <i class="fa-solid fa-check"></i> Clean
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="action-footer">
+        <a href="/" class="btn-secondary"><i class="fa-solid fa-arrow-rotate-left"></i> Scan Another File</a>
+        <a href="{{ url_for('download_report') }}" class="btn-primary-large"
+            style="padding: 0.8rem 1.5rem; font-size: 1rem; margin-left: 1rem; border-radius: 8px;">
+            <i class="fa-solid fa-file-arrow-down"></i> Download Report
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    // Tab Switching
+    const tabs = document.querySelectorAll('.vt-tab');
+    const contents = document.querySelectorAll('.vt-tab-content');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class
+            tabs.forEach(t => t.classList.remove('active'));
+            contents.forEach(c => c.classList.remove('active'));
+
+            // Add active class
+            tab.classList.add('active');
+            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+        });
+    });
+
+    // File Upload Logic
+    function triggerFile() {
+        document.getElementById('fileInput').click();
+    }
+
+    const fileInput = document.getElementById('fileInput');
+    const uploadZone = document.getElementById('dropZone');
+    const fileForm = document.getElementById('scanForm');
+    const urlForm = document.getElementById('urlForm'); // New 
+    const overlay = document.getElementById('scanOverlay');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+
+    if (fileInput) {
+        fileInput.addEventListener('change', handleFile);
+
+        // Drag and Drop
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.classList.add('drag-active');
+        });
+
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.classList.remove('drag-active');
+        });
+
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.classList.remove('drag-active');
+            if (e.dataTransfer.files.length) {
+                fileInput.files = e.dataTransfer.files;
+                handleFile();
+            }
+        });
+    }
+
+    // URL Form Submission Listener
+    if (urlForm) {
+        urlForm.addEventListener('submit', (e) => {
+            e.preventDefault(); // Stop instant submit
+            startScanningAnimation(urlForm); // Start animation then submit
+        });
+    }
+
+    function handleFile() {
+        if (fileInput.files.length > 0) {
+            startScanningAnimation(fileForm);
+        }
+    }
+
+    function startScanningAnimation(targetForm) {
+        overlay.classList.remove('hidden');
+        let progress = 0;
+
+        // Dynamic Interval speed
+        const interval = setInterval(() => {
+            progress += Math.floor(Math.random() * 5) + 1;
+
+            if (progress > 95) {
+                clearInterval(interval);
+                // Submit form when animation is "almost" done
+                targetForm.submit();
+            } else {
+                updateProgress(progress);
+            }
+        }, 80);
+    }
+
+    function updateProgress(val) {
+        progressBar.style.width = val + '%';
+        progressText.innerText = val + '%';
+    }
+</script>
+
+{% endblock %}

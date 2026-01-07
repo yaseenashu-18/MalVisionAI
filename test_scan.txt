@@ -1,0 +1,2 @@
+This is a test file for the security scanner.
+It contains safe text content.
