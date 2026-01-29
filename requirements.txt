@@ -3,3 +3,10 @@ scikit-learn
 pandas
 numpy
 joblib
+Flask-PyMongo
+Authlib
+python-dotenv
+fpdf
+Flask-Mail
+dnspython
+requests

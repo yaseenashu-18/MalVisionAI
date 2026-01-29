@@ -12,10 +12,51 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="/static/css/style.css">
+    <!-- Cropper.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body>
+    <!-- PRELOADER -->
+    <div id="global-preloader"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;">
+        <div
+            style="width: 50px; height: 50px; border: 3px solid rgba(99, 102, 241, 0.3); border-radius: 50%; border-top-color: #6366f1; animation: spin 1s ease-in-out infinite;">
+        </div>
+    </div>
+    <script>
+        window.addEventListener('load', () => {
+            const loader = document.getElementById('global-preloader');
+            if (loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
+            }
+        });
+    </script>
+    <style>
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Sticky Footer Fix */
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .main-container {
+            flex: 1;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
 
     <div class="background-globes">
         <div class="globe globe-1"></div>
@@ -24,25 +65,95 @@
     </div>
 
     <nav class="glass-nav">
-        <div class="nav-logo">
-            <i class="fa-solid fa-shield-virus"></i>
-            <span>MalVisionAI</span>
-        </div>
-        <div class="nav-links">
+        <!-- New Logo Design -->
+        <a href="/" class="nav-logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
+            <div
+                style="background: linear-gradient(135deg, #6366f1, #a855f7); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
+                <i class="fa-solid fa-file-shield" style="color: white; font-size: 20px;"></i>
+            </div>
+            <div style="display: flex; flex-direction: column; line-height: 1.2;">
+                <span
+                    style="font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; background: linear-gradient(90deg, #818cf8, #c084fc); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Malvision
+                    AI</span>
+                <span
+                    style="font-family: 'Inter', sans-serif; font-size: 0.75rem; color: #64748b; font-weight: 500;">Advanced
+                    Threat Detection</span>
+            </div>
+        </a>
+
+        <div class="nav-links" style="display: flex; align-items: center; gap: 20px;">
+
+            <!-- Standard Navigation (Visible to Everyone) -->
             <a href="/" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
-            <a href="/scan" class="nav-item"><i class="fa-solid fa-radar"></i> Scanner</a>
+            {% if not user %}
             <a href="/history" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
+            {% endif %}
             <a href="/about" class="nav-item"><i class="fa-solid fa-circle-info"></i> About</a>
 
             {% if user %}
-            <div class="user-profile" style="display: flex; align-items: center; gap: 10px; margin-left: 15px;">
-                <a href="/profile" title="View Profile">
+            <!-- App Navigation (Logged In Profile) -->
+            <div class="user-profile"
+                style="display: flex; align-items: center; gap: 15px; margin-left: 20px; padding-left: 20px; border-left: 1px solid rgba(255,255,255,0.1);">
+                <a href="/profile" title="View Profile"
+                    style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                     <img src="{{ user.picture }}" alt="User"
-                        style="width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--primary); transition: transform 0.2s;">
+                        style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #6366f1;">
+                    <span style="font-size: 0.9rem; font-weight: 500; color: #cbd5e1;">{{ user.name }}</span>
                 </a>
-                <a href="/logout" class="nav-item" style="color: var(--accent-bad);" title="Logout"><i
-                        class="fa-solid fa-right-from-bracket"></i></a>
+
+                <a href="/logout" style="
+                    background: transparent;
+                    border: 1px solid #ef4444;
+                    color: #ef4444;
+                    padding: 0.4rem 0.8rem;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    font-size: 0.85rem;
+                    text-decoration: none;
+                    transition: all 0.2s;
+                    margin-left: 10px;
+                " onmouseover="this.style.background='#ef4444'; this.style.color='white'"
+                    onmouseout="this.style.background='transparent'; this.style.color='#ef4444'">
+                    Log Out
+                </a>
             </div>
+
+            {% else %}
+            <!-- Public Site Navigation (Logged Out) -->
+            <a href="/login"
+                style="color: #cbd5e1; font-weight: 500; text-decoration: none; font-size: 0.95rem; transition: color 0.2s;">Log
+                in</a>
+
+            <a href="/contact" style="
+                    background: transparent;
+                    border: 1px solid #475569;
+                    color: #e2e8f0;
+                    padding: 0.5rem 1rem;
+                    border-radius: 6px;
+                    font-weight: 600;
+                    font-size: 0.9rem;
+                    text-decoration: none;
+                    transition: all 0.2s;
+                 " onmouseover="this.style.borderColor='#94a3b8'; this.style.color='white'"
+                onmouseout="this.style.borderColor='#475569'; this.style.color='#e2e8f0'">
+                Contact
+            </a>
+
+            <a href="/signup" style="
+                    background: #fff;
+                    color: #000;
+                    padding: 0.5rem 1rem;
+                    border-radius: 6px;
+                    font-weight: 700;
+                    font-size: 0.9rem;
+                    text-decoration: none;
+                    transition: all 0.2s;
+                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                 "
+                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 12px rgba(255,255,255,0.2)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'">
+                Get Started
+            </a>
             {% endif %}
         </div>
     </nav>

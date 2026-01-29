@@ -120,7 +120,8 @@
     </div>
 
     <div class="action-footer">
-        <a href="/" class="btn-secondary"><i class="fa-solid fa-arrow-rotate-left"></i> Scan Another File</a>
+        <a href="/scan?new=true" class="btn-secondary"><i class="fa-solid fa-arrow-rotate-left"></i> Scan Another
+            File</a>
         <a href="{{ url_for('download_report') }}" class="btn-primary-large"
             style="padding: 0.8rem 1.5rem; font-size: 1rem; margin-left: 1rem; border-radius: 8px;">
             <i class="fa-solid fa-file-arrow-down"></i> Download Report
@@ -220,4 +221,30 @@
     }
 </script>
 
+
+{% if result %}
+<script>
+    (function () {
+        try {
+            const scanEntry = {
+                file: "{{ file_info.name }}",
+                result: "{{ result }}",
+                time: new Date().toLocaleString()
+            };
+
+            let history = JSON.parse(sessionStorage.getItem('malvision_history') || "[]");
+            // Optional: Avoid adding exact duplicate if reload page
+            const last = history[0];
+            const isDuplicate = last && last.file === scanEntry.file && last.result === scanEntry.result;
+
+            if (!isDuplicate) {
+                history.unshift(scanEntry);
+                // Limit to 20
+                if (history.length > 20) history.pop();
+                sessionStorage.setItem('malvision_history', JSON.stringify(history));
+            }
+        } catch (e) { console.error("History storage error", e); }
+    })();
+</script>
+{% endif %}
 {% endblock %}

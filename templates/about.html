@@ -1,18 +1,194 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="glass-card fade-up">
-    <div class="card-header">
-        <h2><i class="fa-solid fa-circle-info"></i> About This Project</h2>
+<div class="about-page-wrapper" style="background: #000; min-height: 100vh; color: #fff; padding: 8rem 0;">
+    <div class="about-container" style="
+        display: flex;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 4rem;
+        gap: 8rem;
+    ">
+        <!-- Sticky Sidebar Header -->
+        <div class="about-sidebar" style="flex: 0 0 320px;">
+            <div style="position: sticky; top: 8rem;">
+                <h1 style="
+                    font-family: 'Orbitron', sans-serif;
+                    font-size: 4.8rem;
+                    line-height: 1;
+                    color: #fff;
+                    margin: 0;
+                    text-align: left;
+                    font-weight: 700;
+                    text-transform: none;
+                    letter-spacing: -1px;
+                ">
+                    Meet Our<br>Team
+                </h1>
+
+                <p style="
+                    font-family: 'Inter', sans-serif;
+                    color: #64748b;
+                    font-size: 1.15rem;
+                    text-align: left;
+                    margin: 2.5rem 0 0 0;
+                    line-height: 1.6;
+                    max-width: 300px;
+                ">
+                    A collaborative squadron of cybersecurity experts and AI engineers dedicated to pioneering the next
+                    generation of threat detection.
+                </p>
+
+                <div style="margin-top: 3rem; width: 60px; height: 4px; background: #6366f1; border-radius: 2px;"></div>
+            </div>
+        </div>
+
+        <!-- Main Team Grid -->
+        <div class="team-grid" style="
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem 2.5rem;
+        ">
+            {% for member in [
+            {'name': 'Maksud Vohra', 'role': 'Project Guide & Mentor'},
+            {'name': 'Yaseen', 'role': 'Lead Full-Stack Developer'},
+            {'name': 'Rikshith', 'role': 'Machine Learning Specialist'},
+            {'name': 'Bharath', 'role': 'Security Systems Architect'},
+            {'name': 'Saketh', 'role': 'Frontend Visionary'},
+            {'name': 'Srinath', 'role': 'Data Infrastructure Engineer'}
+            ] %}
+            <div class="team-member-card"
+                style="transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: default;">
+                <div class="member-image-container" style="
+                    aspect-ratio: 16/19;
+                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+                    border-radius: 20px;
+                    overflow: hidden;
+                    margin-bottom: 1.5rem;
+                    position: relative;
+                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    <!-- Stylish Placeholder Icon -->
+                    <i class="fa-solid fa-user-shield" style="
+                        font-size: 5rem;
+                        color: rgba(99, 102, 241, 0.2);
+                        transition: all 0.6s ease;
+                    " class="member-placeholder-icon"></i>
+
+                    <!-- Hover Accent Border -->
+                    <div class="hover-border" style="
+                        position: absolute;
+                        inset: 0;
+                        border: 2px solid #6366f1;
+                        border-radius: 20px;
+                        opacity: 0;
+                        transition: opacity 0.4s ease;
+                        pointer-events: none;
+                    "></div>
+                </div>
+
+                <h3 style="
+                    font-family: 'Inter', sans-serif;
+                    font-size: 1.3rem;
+                    font-weight: 700;
+                    color: #fff;
+                    margin: 0 0 0.5rem 0;
+                    text-align: left;
+                    transition: color 0.3s ease;
+                ">{{ member.name }}</h3>
+
+                <p style="
+                    font-family: 'Inter', sans-serif;
+                    font-size: 0.85rem;
+                    font-weight: 500;
+                    color: #94a3b8;
+                    text-transform: none;
+                    text-align: left;
+                    margin: 0;
+                    line-height: 1;
+                ">{{ member.role }}</p>
+
+                <p style="
+                    font-family: 'Inter', sans-serif;
+                    font-size: 0.85rem;
+                    color: #475569;
+                    text-align: left;
+                    margin-top: 0.2rem;
+                ">MalVisionAI Team</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-    <p>
-        This project utilizes advanced <strong>Artificial Intelligence</strong> and <strong>Machine Learning</strong>
-        algorithms to analyze file patterns and detect potential security threats in real-time.
-    </p>
-    <p style="margin-top: 1rem;">
-        Our goal is to provide a fast, reliable, and user-friendly interface for malware detection, helping users stay
-        safe in the digital world.
-    </p>
 </div>
+
+<style>
+    .team-member-card:hover {
+        transform: translateY(-8px);
+    }
+
+    .team-member-card:hover .member-img {
+        transform: scale(1.04);
+        filter: grayscale(0);
+    }
+
+    .team-member-card:hover .hover-border {
+        opacity: 0.4;
+    }
+
+    .team-member-card:hover h3 {
+        color: #6366f1;
+    }
+
+    /* Responsive adjustment */
+    @media (max-width: 1300px) {
+        .about-sidebar {
+            flex: 0 0 280px;
+        }
+
+        .about-sidebar h1 {
+            font-size: 4rem;
+        }
+
+        .team-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 1024px) {
+        .about-container {
+            flex-direction: column;
+            padding: 0 3rem;
+            gap: 5rem;
+        }
+
+        .about-sidebar {
+            flex: none;
+            width: 100%;
+        }
+
+        .about-sidebar h1 {
+            font-size: 3.5rem;
+        }
+
+        .about-sidebar [style*="sticky"] {
+            position: relative !important;
+            top: 0 !important;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .team-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .about-container {
+            padding: 0 1.5rem;
+        }
+    }
+</style>
 
 {% endblock %}

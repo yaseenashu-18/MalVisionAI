@@ -12,21 +12,34 @@
                 <th><i class="fa-solid fa-calendar"></i> Timestamp</th>
             </tr>
         </thead>
-        <tbody>
-            {% for scan in scans %}
-            <tr>
-                <td>{{ scan.file }}</td>
-                <td>
-                    <span class="result-badge {% if scan.result == 'Malicious' %}danger{% else %}safe{% endif %}"
-                        style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
-                        {{ scan.result }}
-                    </span>
-                </td>
-                <td>{{ scan.time }}</td>
-            </tr>
-            {% endfor %}
+        <tbody id="historyBody">
+            <!-- Populated by JS -->
         </tbody>
     </table>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const tbody = document.getElementById('historyBody');
+        const history = JSON.parse(sessionStorage.getItem('malvision_history') || "[]");
+
+        if (history.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #64748b; padding: 2rem;">No recent scans in this session.</td></tr>';
+        } else {
+            tbody.innerHTML = history.map(scan => `
+                <tr>
+                    <td>${scan.file}</td>
+                    <td>
+                        <span class="result-badge ${scan.result === 'Malicious' ? 'danger' : 'safe'}"
+                            style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
+                            ${scan.result}
+                        </span>
+                    </td>
+                    <td>${scan.time}</td>
+                </tr>
+            `).join('');
+        }
+    });
+</script>
 
 {% endblock %}
