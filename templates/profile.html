@@ -1,46 +1,146 @@
 {% extends "base.html" %}
 {% block content %}
 <style>
-    .luxury-container {
-        max-width: 800px;
+    /* Premium Sidebar Dashboard Layout */
+    .layout-wrapper {
+        display: flex;
+        max-width: 1300px;
         margin: 0 auto;
         padding: 4rem 1.5rem;
+        gap: 3rem;
+        min-height: 80vh;
     }
 
-    .glass-card {
-        background: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(30px);
-        -webkit-backdrop-filter: blur(30px);
-        border: 1px solid rgba(255, 255, 255, 0.4);
-        border-radius: 24px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
-        padding: 3rem;
-        margin-bottom: 2rem;
-        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    @media (max-width: 900px) {
+        .layout-wrapper {
+            flex-direction: column;
+        }
+        .sidebar {
+            width: 100% !important;
+            flex-direction: row !important;
+            overflow-x: auto;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 1rem;
+        }
+        .nav-collection {
+            flex-direction: row !important;
+            gap: 1rem !important;
+        }
+        .nav-item {
+            white-space: nowrap;
+        }
+        .profile-summary {
+            display: none !important;
+        }
     }
+
+    /* LEFT SIDEBAR */
+    .sidebar {
+        width: 260px;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 2.5rem;
+    }
+
+    .nav-collection {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .nav-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.2rem;
+        border-radius: 14px;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .nav-item:hover {
+        background: rgba(0,0,0,0.02);
+    }
+
+    .nav-item.active {
+        background: #FFFFFF;
+        color: var(--primary);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.03);
+        border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .nav-item i {
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    /* RIGHT MAIN CONTENT */
+    .main-content {
+        flex: 1;
+        background: #FFFFFF;
+        border-radius: 24px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        border: 1px solid rgba(0,0,0,0.03);
+        position: relative;
+        min-height: 500px;
+    }
+
+    .tab-pane {
+        display: none;
+        padding: 3rem;
+        animation: fadeSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .tab-pane.active {
+        display: block;
+    }
+
+    @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Shared Reusable Components */
+    .stat-box {
+        background: var(--bg-system, #F2F2F7);
+        padding: 1.5rem;
+        border-radius: 16px;
+        flex: 1;
+        transition: transform 0.2s;
+    }
+    .stat-box:hover { transform: translateY(-3px); }
     
-    .glass-card:hover {
-        transform: translateY(-4px);
+    .stat-box h3 {
+        font-size: 2.2rem;
+        font-weight: 800;
+        color: var(--primary);
+        margin: 0 0 0.2rem 0;
+        letter-spacing: -1px;
+    }
+    .stat-box p {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+        margin: 0;
+        font-weight: 700;
     }
 
     .data-table-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 1.5rem;
+        padding: 1.2rem;
         border-bottom: 1px solid rgba(0,0,0,0.05);
         transition: all 0.2s;
     }
-
-    .data-table-row:last-child {
-        border-bottom: none;
-    }
-
-    .data-table-row:hover {
-        background: #F9FAFB;
-        border-radius: 16px;
-        border-bottom-color: transparent;
-    }
+    .data-table-row:hover { background: #F9FAFB; border-radius: 12px; border-bottom-color: transparent; }
 
     .status-badge {
         font-weight: 700;
@@ -53,107 +153,244 @@
         align-items: center;
         gap: 6px;
     }
-
     .status-malicious { color: #FF3B30; background: rgba(255, 59, 48, 0.1); }
     .status-safe { color: #34C759; background: rgba(52, 199, 89, 0.1); }
 </style>
 
-<div class="luxury-container fade-in">
-    <!-- Header -->
-    <div style="text-align: center; margin-bottom: 3rem;">
-        <h1 style="font-size: 3rem; font-weight: 800; color: #000; letter-spacing: -1.5px; margin: 0;">Account</h1>
-        <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 0.5rem; font-weight: 500;">Manage your identity and review your personal security log.</p>
-    </div>
-
-    <!-- Minimal Profile Card -->
-    <div class="glass-card" style="display: flex; align-items: center; gap: 2.5rem;">
-        <div class="profile-pic-wrapper" style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
-            <input type="file" id="pic_file_input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
-            <img id="profile-display-img" src="{{ user_info.picture }}" alt="Profile" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid white;">
-            
-            <div onclick="document.getElementById('pic_file_input').click()" style="position: absolute; bottom: 0; right: 0; background: #000; width: 36px; height: 36px; border-radius: 50%; border: 3px solid #FFF; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; cursor: pointer; transition: transform 0.2s;" title="Update Profile Picture" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
-                <i class="fa-solid fa-camera"></i>
-            </div>
-        </div>
-
-        <div style="flex: 1;">
-            <h2 style="font-size: 1.8rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin: 0 0 0.2rem 0;">{{ user_info.name }}</h2>
-            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 500; margin: 0 0 1.5rem 0;">{{ user_info.email }}</p>
-            
-            <div style="display: flex; gap: 1rem;">
-                <div style="background: rgba(0, 0, 0, 0.05); color: #000; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-cloud"></i> Session Active
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Minimal Scan History -->
-    <div class="glass-card" style="padding: 0;">
-        <div style="padding: 2.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
-            <h3 style="font-size: 1.4rem; font-weight: 800; color: #000; margin: 0; letter-spacing: -0.5px;">Recent Scans</h3>
-            <a href="/scan?new=true" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 0.9rem; background: rgba(0,122,255,0.1); padding: 0.5rem 1rem; border-radius: 20px;">
-                <i class="fa-solid fa-plus" style="margin-right: 4px;"></i> New Scan
-            </a>
-        </div>
-
-        {% if scans %}
-        <div style="padding: 1rem 1.5rem 1.5rem;">
-            {% for scan in scans %}
-            <div class="data-table-row">
-                <div style="display: flex; align-items: center; gap: 1.2rem; flex: 1;">
-                    <div style="width: 40px; height: 40px; background: rgba(0,0,0,0.03); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
-                        <i class="fa-solid fa-file" style="font-size: 1.1rem;"></i>
-                    </div>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="color: #000; font-weight: 700; font-size: 1rem; letter-spacing: -0.2px;">{{ scan.file }}</span>
-                        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-top: 0.2rem;">
-                            {{ scan.time.strftime('%b %d, %Y') if scan.time.strftime else scan.time }}
-                        </span>
-                    </div>
-                </div>
+<div class="layout-wrapper fade-in">
+    <!-- LEFT SIDEBAR -->
+    <div class="sidebar">
+        <!-- Profile Summary Container -->
+        <div class="profile-summary" style="text-align: center; background: #FFFFFF; padding: 2rem 1.5rem; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03);">
+            <div class="profile-pic-wrapper" style="position: relative; width: 90px; height: 90px; margin: 0 auto 1.2rem;">
+                <input type="file" id="pic_file_input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+                <img id="profile-display-img" src="{{ user_info.picture }}" alt="Profile" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; box-shadow: 0 8px 20px rgba(0,0,0,0.1); border: 3px solid #FFF;">
                 
-                <div style="display: flex; align-items: center; gap: 2rem;">
-                    <span class="status-badge {% if scan.result == 'Malicious' %}status-malicious{% else %}status-safe{% endif %}">
-                        {{ scan.result }}
-                    </span>
-                    <a href="/download_report_history/{{ scan._id }}" title="Download PDF Report" style="color: #000; font-size: 1.2rem; transition: transform 0.2s; text-decoration: none; width: 36px; height: 36px; background: rgba(0,0,0,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
-                        <i class="fa-solid fa-download" style="font-size: 0.9rem;"></i>
-                    </a>
+                <div onclick="document.getElementById('pic_file_input').click()" style="position: absolute; bottom: -5px; right: -5px; background: var(--primary); width: 32px; height: 32px; border-radius: 50%; border: 2px solid #FFF; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.8rem; cursor: pointer; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                    <i class="fa-solid fa-camera"></i>
                 </div>
             </div>
-            {% endfor %}
+            
+            <h2 style="font-size: 1.2rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin: 0 0 0.2rem 0;">{{ user_info.name }}</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem; font-weight: 500; margin: 0 0 1rem 0;">{{ user_info.email }}</p>
+            
+            <div style="background: rgba(52, 199, 89, 0.1); color: #34C759; padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 5px;">
+                <i class="fa-solid fa-shield-check"></i> Connected
+            </div>
         </div>
-        {% else %}
-        <div style="padding: 5rem 2.5rem; text-align: center;">
-            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="Empty" style="width: 80px; opacity: 0.3; margin-bottom: 1.5rem; filter: grayscale(1);">
-            <h4 style="color: #000; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">No Scans Yet</h4>
-            <p style="color: var(--text-muted); font-size: 1rem;">Your history is clear. Run a scan to build your log.</p>
+
+        <!-- Navigation Menu -->
+        <div class="nav-collection">
+            <div class="nav-item active" onclick="switchTab('overview', this)">
+                <i class="fa-solid fa-chart-pie"></i> Intelligence Overview
+            </div>
+            <div class="nav-item" onclick="switchTab('history', this)">
+                <i class="fa-solid fa-clock-rotate-left"></i> Security Log
+            </div>
+            <div class="nav-item" onclick="switchTab('settings', this)">
+                <i class="fa-solid fa-sliders"></i> Access Settings
+            </div>
         </div>
-        {% endif %}
+    </div>
+
+    <!-- RIGHT MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- 1. OVERVIEW TAB -->
+        <div id="tab-overview" class="tab-pane active">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin: 0;">Intelligence Hub</h2>
+                <div style="background: rgba(52,199,89,0.1); padding: 0.4rem 1rem; border-radius: 30px; font-size: 0.85rem; font-weight: 700; color: #34C759; display: flex; align-items: center; gap: 6px;">
+                    <span style="display:inline-block; width:8px; height:8px; background:#34C759; border-radius:50%; box-shadow: 0 0 8px #34C759;"></span> System Optimal
+                </div>
+            </div>
+            
+            <!-- Global Stats -->
+            <div style="display: flex; gap: 1.5rem; margin-bottom: 3rem;">
+                <div class="stat-box">
+                    <h3>{{ scans|length }}</h3>
+                    <p>Total Scans Performed</p>
+                </div>
+                <div class="stat-box" style="background: rgba(255, 59, 48, 0.05);">
+                    <h3 style="color: #FF3B30;">{{ scans|selectattr("result", "equalto", "Malicious")|list|length }}</h3>
+                    <p>Active Threats Blocked</p>
+                </div>
+            </div>
+
+            <!-- CSS Network Activity Chart (The old feature, brought back) -->
+            <h3 style="font-size: 1.1rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1.5rem;">Network Volume Status</h3>
+            <div style="display: flex; align-items: flex-end; justify-content: space-between; height: 160px; padding: 1.5rem; background: var(--bg-system); border-radius: 16px; margin-bottom: 1.5rem;">
+                <!-- Bar 1 -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 100%; max-width: 32px; height: 40%; background: rgba(0,122,255,0.1); border-radius: 6px 6px 0 0; position: relative; overflow: hidden;">
+                        <div style="position: absolute; bottom: 0; width: 100%; height: 60%; background: var(--primary); border-radius: 6px 6px 0 0;"></div>
+                    </div>
+                </div>
+                <!-- Bar 2 -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 100%; max-width: 32px; height: 70%; background: rgba(0,122,255,0.1); border-radius: 6px 6px 0 0; position: relative; overflow: hidden;">
+                        <div style="position: absolute; bottom: 0; width: 100%; height: 30%; background: var(--primary); border-radius: 6px 6px 0 0;"></div>
+                        <div style="position: absolute; bottom: 30%; width: 100%; height: 20%; background: #FF3B30; border-radius: 0;"></div>
+                    </div>
+                </div>
+                <!-- Bar 3 -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 100%; max-width: 32px; height: 30%; background: rgba(0,122,255,0.1); border-radius: 6px 6px 0 0; position: relative; overflow: hidden;">
+                        <div style="position: absolute; bottom: 0; width: 100%; height: 100%; background: var(--primary); border-radius: 6px 6px 0 0;"></div>
+                    </div>
+                </div>
+                <!-- Bar 4 (Peak) -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 100%; max-width: 32px; height: 100%; background: rgba(0,122,255,0.1); border-radius: 6px 6px 0 0; position: relative; overflow: hidden;">
+                        <div style="position: absolute; bottom: 0; width: 100%; height: 40%; background: var(--primary); border-radius: 6px 6px 0 0;"></div>
+                        <div style="position: absolute; bottom: 40%; width: 100%; height: 15%; background: #FF3B30; border-radius: 0;"></div>
+                    </div>
+                </div>
+                <!-- Bar 5 -->
+                <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px;">
+                    <div style="width: 100%; max-width: 32px; height: 60%; background: rgba(0,122,255,0.1); border-radius: 6px 6px 0 0; position: relative; overflow: hidden;">
+                        <div style="position: absolute; bottom: 0; width: 100%; height: 80%; background: var(--primary); border-radius: 6px 6px 0 0;"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 1.5rem; justify-content: center;">
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: var(--primary);"></div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Clean Files Analyzed</span>
+                </div>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                    <div style="width: 10px; height: 10px; border-radius: 50%; background: #FF3B30;"></div>
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">Threats Found & Blocked</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. HISTORY TAB -->
+        <div id="tab-history" class="tab-pane" style="padding: 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 2.5rem 3rem 1.5rem;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin: 0;">Security Log</h2>
+                <a href="/scan?new=true" class="btn-primary" style="padding: 0.6rem 1.2rem; border-radius: 30px; text-decoration: none; font-size: 0.9rem; border: none; background: var(--primary); color: white;">
+                    <i class="fa-solid fa-plus" style="margin-right: 4px;"></i> New Scan
+                </a>
+            </div>
+
+            {% if scans %}
+            <div style="padding: 0 3rem 3rem;">
+                {% for scan in scans %}
+                <div class="data-table-row">
+                    <div style="display: flex; align-items: center; gap: 1.2rem; flex: 1;">
+                        <div style="width: 45px; height: 45px; background: rgba(0,0,0,0.03); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                            <i class="fa-solid fa-file-code" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div style="display: flex; flex-direction: column;">
+                            <span style="color: #000; font-weight: 700; font-size: 1.05rem; letter-spacing: -0.2px;">{{ scan.file }}</span>
+                            <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-top: 0.2rem;">
+                                {{ scan.time.strftime('%b %d, %Y • %I:%M %p') if scan.time.strftime else scan.time }}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; align-items: center; gap: 2rem;">
+                        <span class="status-badge {% if scan.result == 'Malicious' %}status-malicious{% else %}status-safe{% endif %}">
+                            <i class="fa-solid {% if scan.result == 'Malicious' %}fa-triangle-exclamation{% else %}fa-check-circle{% endif %}"></i> {{ scan.result }}
+                        </span>
+                        <a href="/download_report_history/{{ scan._id }}" title="Download Report" style="color: var(--text-muted); font-size: 1.2rem; transition: color 0.2s; text-decoration: none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 5rem 2rem;">
+                <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="No data" style="width: 120px; opacity: 0.3; filter: grayscale(1); margin-bottom: 1.5rem;">
+                <h4 style="color: #000; font-size: 1.4rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.5px;">Log is clean</h4>
+                <p style="color: var(--text-muted); font-size: 1rem; max-width: 300px; margin: 0 auto;">No activity recorded yet. Scanned threats will appear securely here.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 3. SETTINGS TAB -->
+        <div id="tab-settings" class="tab-pane">
+            <h2 style="font-size: 1.8rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin-bottom: 2rem;">Access & Subscription</h2>
+            
+            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                <!-- Reused Feature: Plan Tier -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 1.2rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(0,122,255,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary);">
+                            <i class="fa-solid fa-crown" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 1rem; font-weight: 700; color: #000; margin: 0;">Service Plan Tier</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">MalVision Elite Enterprise</p>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--primary); cursor: pointer; background: rgba(0,122,255,0.05); padding: 0.5rem 1rem; border-radius: 20px;">Manage Plan</span>
+                </div>
+
+                <!-- Reused Feature: 2FA -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 1.2rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(52,199,89,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #34C759;">
+                            <i class="fa-solid fa-mobile-screen-button" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 1rem; font-weight: 700; color: #000; margin: 0;">Authenticator (2FA)</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Mobile device active</p>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); cursor: pointer; background: rgba(0,0,0,0.05); padding: 0.5rem 1rem; border-radius: 20px;">Settings</span>
+                </div>
+
+                <!-- Reused Feature: API -->
+                <div style="display: flex; align-items: center; justify-content: space-between; border: 1px solid rgba(0,0,0,0.05); padding: 1.5rem; border-radius: 16px;">
+                    <div style="display: flex; align-items: center; gap: 1.2rem;">
+                        <div style="width: 48px; height: 48px; background: rgba(255,149,0,0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: #FF9500;">
+                            <i class="fa-solid fa-key" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 1rem; font-weight: 700; color: #000; margin: 0;">API Access Token</p>
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0;">Last used 2 hrs ago</p>
+                        </div>
+                    </div>
+                    <span style="font-size: 0.85rem; font-weight: 700; color: #FF3B30; cursor: pointer; background: rgba(255,59,48,0.05); padding: 0.5rem 1rem; border-radius: 20px;">Revoke Access</span>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
 <!-- Image Cropper Modal (iOS Clean Style) -->
 <div id="cropperModal"
-    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10000; align-items: center; justify-content: center; flex-direction: column;">
-    <div
-        style="max-width: 90%; max-height: 70%; background: #FFF; padding: 10px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+    style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); z-index:10000; align-items:center; justify-content:center; flex-direction:column;">
+    <div style="max-width:90%; max-height:70%; background:#FFF; padding:10px; border-radius:20px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.4);">
         <img id="cropperImage" style="max-width: 100%; display: block;">
     </div>
     <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; width: 90%; max-width: 300px;">
         <button onclick="applyCrop()" class="btn-primary" style="width: 100%; justify-content: center; background: #000; color: white; border: none; padding: 1rem; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 1rem;">Apply Changes</button>
-        <button onclick="closeCropper()"
-            style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 1rem; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 1rem;">Cancel</button>
+        <button onclick="closeCropper()" style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 1rem; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 1rem;">Cancel</button>
     </div>
 </div>
 
-<!-- Hidden form for submission -->
+<!-- Hidden form -->
 <form id="cropped-form" action="/update_profile" method="POST" enctype="multipart/form-data" style="display: none;">
     <input type="file" name="picture_file" id="cropped_file_input">
 </form>
 
 <script>
+    // Tab Switching Logic
+    function switchTab(tabId, el) {
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+        
+        el.classList.add('active');
+        document.getElementById('tab-' + tabId).classList.add('active');
+    }
+
+    // Cropper Logic
     let cropper;
     const modal = document.getElementById('cropperModal');
     const image = document.getElementById('cropperImage');
@@ -166,37 +403,19 @@
             reader.onload = function (e) {
                 image.src = e.target.result;
                 modal.style.display = 'flex';
-
                 if (cropper) cropper.destroy();
-                cropper = new Cropper(image, {
-                    aspectRatio: 1,
-                    viewMode: 2,
-                    guides: false,
-                    center: true,
-                    highlight: false,
-                    cropBoxMovable: true,
-                    cropBoxResizable: false,
-                    toggleDragModeOnDblclick: false
-                });
+                cropper = new Cropper(image, { aspectRatio: 1, viewMode: 2, guides: false, center: true, highlight: false, cropBoxMovable: true, cropBoxResizable: false, toggleDragModeOnDblclick: false });
             };
             reader.readAsDataURL(file);
         }
     }
-
-    function closeCropper() {
-        modal.style.display = 'none';
-        if (cropper) cropper.destroy();
-        document.getElementById('pic_file_input').value = '';
-    }
-
+    function closeCropper() { modal.style.display = 'none'; if (cropper) cropper.destroy(); document.getElementById('pic_file_input').value = ''; }
     function applyCrop() {
         if (!cropper) return;
-        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
-        canvas.toBlob((blob) => {
+        cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob((blob) => {
             const fileInput = document.getElementById('cropped_file_input');
             const dataTransfer = new DataTransfer();
-            const file = new File([blob], "profile_picture.png", { type: "image/png" });
-            dataTransfer.items.add(file);
+            dataTransfer.items.add(new File([blob], "profile_picture.png", { type: "image/png" }));
             fileInput.files = dataTransfer.files;
             document.getElementById('cropped-form').submit();
         }, 'image/png');
