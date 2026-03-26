@@ -1,21 +1,46 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h2><i class="fa-solid fa-clock-rotate-left"></i> Previous Scans</h2>
+<div class="history-container fade-in"
+    style="padding: 8rem 2rem; max-width: 1000px; margin: 0 auto; min-height: 100vh;">
+    <h1
+        style="font-size: 2.5rem; font-weight: 800; color: #1C1C1C; margin-bottom: 4rem; text-transform: uppercase; letter-spacing: -1px;">
+        Previous Scans
+    </h1>
 
-<div class="table-container fade-in">
-    <table>
-        <thead>
-            <tr>
-                <th><i class="fa-solid fa-file"></i> File Name</th>
-                <th><i class="fa-solid fa-shield-halved"></i> Result</th>
-                <th><i class="fa-solid fa-calendar"></i> Timestamp</th>
-            </tr>
-        </thead>
-        <tbody id="historyBody">
-            <!-- Populated by JS -->
-        </tbody>
-    </table>
+    <div class="table-card" style="
+        background: #FAFAF8;
+        border: 1px solid rgba(28, 28, 28, 0.05);
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.03);
+    ">
+        <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+                <tr style="border-bottom: 1px solid rgba(28, 28, 28, 0.05); background: #F6F5F1;">
+                    <th
+                        style="padding: 1.5rem; color: #666; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
+                        File / URL</th>
+                    <th
+                        style="padding: 1.5rem; color: #666; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: center;">
+                        Result</th>
+                    <th
+                        style="padding: 1.5rem; color: #666; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; text-align: right;">
+                        Timestamp</th>
+                </tr>
+            </thead>
+            <tbody id="historyBody">
+                <!-- Populated by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center;">
+        <p style="color: #999; font-size: 0.9rem; font-weight: 500;">
+            <i class="fa-solid fa-lock" style="margin-right: 0.5rem;"></i> History is stored locally in your current
+            session.
+        </p>
+    </div>
 </div>
 
 <script>
@@ -24,18 +49,34 @@
         const history = JSON.parse(sessionStorage.getItem('malvision_history') || "[]");
 
         if (history.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="3" style="text-align:center; color: #64748b; padding: 2rem;">No recent scans in this session.</td></tr>';
-        } else {
-            tbody.innerHTML = history.map(scan => `
+            tbody.innerHTML = `
                 <tr>
-                    <td>${scan.file}</td>
-                    <td>
-                        <span class="result-badge ${scan.result === 'Malicious' ? 'danger' : 'safe'}"
-                            style="font-size: 0.8rem; padding: 0.3rem 0.8rem;">
+                    <td colspan="3" style="padding: 5rem; text-align: center; color: #BBB; font-weight: 500;">
+                        <i class="fa-solid fa-folder-open" style="font-size: 3rem; margin-bottom: 1.5rem; display: block; opacity: 0.3;"></i>
+                        No recent scans found in this session.
+                    </td>
+                </tr>`;
+        } else {
+            tbody.innerHTML = history.reverse().map(scan => `
+                <tr style="border-bottom: 1px solid rgba(28, 28, 28, 0.02); transition: background 0.3s;" onmouseover="this.style.background='rgba(28,28,28,0.01)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 1.5rem; color: #1C1C1C; font-weight: 600;">${scan.file}</td>
+                    <td style="padding: 1.5rem; text-align: center;">
+                        <span style="
+                            font-weight: 800; 
+                            font-size: 0.7rem; 
+                            padding: 0.4rem 1rem; 
+                            border-radius: 2px;
+                            text-transform: uppercase;
+                            letter-spacing: 1px;
+                            background: ${scan.result === 'Malicious' ? 'rgba(218, 54, 51, 0.1)' : 'rgba(46, 160, 67, 0.1)'};
+                            color: ${scan.result === 'Malicious' ? '#da3633' : '#2ea043'};
+                        ">
                             ${scan.result}
                         </span>
                     </td>
-                    <td>${scan.time}</td>
+                    <td style="padding: 1.5rem; text-align: right; color: #999; font-size: 0.85rem; font-weight: 500;">
+                        ${scan.time}
+                    </td>
                 </tr>
             `).join('');
         }

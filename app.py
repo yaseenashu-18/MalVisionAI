@@ -1,5 +1,13 @@
-from flask import Flask, render_template, request, session, redirect, url_for, send_file, make_response, flash
-import datetime, os, hashlib, math, joblib, io, secrets
+from fpdf import FPDF
+
+from flask import Flask, render_template, request, session, redirect, url_for, send_file, flash
+import datetime
+import os
+import hashlib
+import math
+import joblib
+import io
+import secrets
 import pandas as pd
 import numpy as np
 from flask_pymongo import PyMongo
@@ -7,27 +15,30 @@ from authlib.integrations.flask_client import OAuth
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash, check_password_hash
-
 from flask_mail import Mail, Message
 from werkzeug.utils import secure_filename
 import re
+
 
 def clean_username(email):
     # Get everything before @, lowercase it, remove all non-alphanumeric chars
     raw = email.split('@')[0].lower()
     return re.sub(r'[^a-z0-9]', '', raw)
 
-load_dotenv() # Load environment variables
+
+load_dotenv()  # Load environment variables
 
 app = Flask(__name__)
-app.secret_key = "super_secret_static_key_for_dev_session_persistence"  # Static key for stability
+# Static key for stability
+app.secret_key = "super_secret_static_key_for_dev_session_persistence"
 
 # Allow OAuth over HTTP for local dev
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 # --- CONFIGURATION ---
 # Use a local DB fallback if no URI provided
-app.config["MONGO_URI"] = os.getenv("MONGO_URI", "mongodb://localhost:27017/malvision")
+app.config["MONGO_URI"] = os.getenv(
+    "MONGO_URI", "mongodb://localhost:27017/malvision")
 app.config['GOOGLE_CLIENT_ID'] = os.getenv("GOOGLE_CLIENT_ID")
 app.config['GOOGLE_CLIENT_SECRET'] = os.getenv("GOOGLE_CLIENT_SECRET")
 app.config['GOOGLE_DISCOVERY_URL'] = "https://accounts.google.com/.well-known/openid-configuration"
@@ -71,38 +82,45 @@ google = oauth.register(
 # ... (Rest of code)
 
 
-
 # Load ML Model
 try:
     model = joblib.load("malware_model.pkl")
     print("AI Model Loaded Successfully")
-except:
+except Exception:
     print("Error: Model not found. Since this is a demo, we will proceed without it for now.")
     model = None
 
 # --- ML HELPER FUNCTIONS ---
+
+
 def calculate_entropy(text):
-    if not text: return 0
-    prob = [float(text.count(c)) / len(text) for c in dict.fromkeys(list(text))]
+    if not text:
+        return 0
+    prob = [float(text.count(c)) / len(text)
+            for c in dict.fromkeys(list(text))]
     return - sum([p * math.log(p) / math.log(2.0) for p in prob])
+
 
 def extract_features(text, size_mb):
     length = len(text)
-    if length == 0: return np.array([[0, 0, 0, 0, 0, size_mb, 0, 0]]) # Handle empty
-    
+    if length == 0:
+        return np.array([[0, 0, 0, 0, 0, size_mb, 0, 0]])  # Handle empty
+
     entropy = calculate_entropy(text)
     num_chars = sum(c.isdigit() for c in text)
     spec_chars = sum(not c.isalnum() for c in text)
     whitespaces = sum(c.isspace() for c in text)
     vowels = sum(1 for c in text.lower() if c in "aeiou")
-    
+
     whitespace_ratio = whitespaces / length
     vowel_ratio = vowels / length
 
-    keywords = ["virus", "malware", "botnet", "trojan", "worm", "spyware", "phishing", "evil", "attack", "hack", "ransom", "keylogger"]
+    keywords = ["virus", "malware", "botnet", "trojan", "worm", "spyware",
+                "phishing", "evil", "attack", "hack", "ransom", "keylogger"]
     has_keyword = 1 if any(k in text.lower() for k in keywords) else 0
-    
+
     return np.array([[length, entropy, num_chars, spec_chars, has_keyword, size_mb, whitespace_ratio, vowel_ratio]])
+
 
 def get_file_metadata(file):
     file.seek(0)
@@ -110,54 +128,64 @@ def get_file_metadata(file):
     file_size = len(content)
     file_hash = hashlib.sha256(content).hexdigest()
     file.seek(0)
-    
-    if file_size < 1024: size_str = f"{file_size} B"
-    elif file_size < 1024 * 1024: size_str = f"{file_size/1024:.2f} KB"
-    else: size_str = f"{file_size/(1024*1024):.2f} MB"
-        
+
+    if file_size < 1024:
+        size_str = f"{file_size} B"
+    elif file_size < 1024 * 1024:
+        size_str = f"{file_size/1024:.2f} KB"
+    else:
+        size_str = f"{file_size/(1024*1024):.2f} MB"
+
     return {"name": file.filename, "size": size_str, "type": file.content_type, "hash": file_hash}
+
 
 def detect_malware(text, size_mb=0):
     features_data = {}
     if model:
         # Create DataFrame with correct feature names to match training
         f = extract_features(text, size_mb)
-        features_df = pd.DataFrame(f, columns=["length", "entropy", "num_chars", "spec_chars", "has_keyword", "size", "whitespace_ratio", "vowel_ratio"])
-        
+        features_df = pd.DataFrame(f, columns=[
+                                   "length", "entropy", "num_chars", "spec_chars", "has_keyword", "size", "whitespace_ratio", "vowel_ratio"])
+
         prediction = model.predict(features_df)[0]
         result = "Malicious" if prediction == 1 else "Safe"
-        
+
         # Save raw features for reporting
         features_data = {
             "Entropy": round(f[0][1], 2),
-            "Non-Alphanumeric Ratio": round((f[0][3]/f[0][0])*100, 1) if f[0][0] > 0 else 0,
+            "Non-Alphanumeric Ratio": round((f[0][3] / f[0][0]) * 100, 1) if f[0][0] > 0 else 0,
             "Key-Threat-Score": f[0][4],
             "Complexity-Index": f[0][0]
         }
         return result, features_data
     return "Safe", features_data
 
+
 def detect_file(filename, size_bytes):
     return detect_malware(filename, size_bytes / (1024 * 1024))
+
 
 def detect_url(url):
     return detect_malware(url, 0)
 
 # --- ROUTES ---
 
+
 @app.route("/")
 def dashboard():
     return render_template("dashboard.html", user=session.get('user'))
+
 
 @app.route("/scan", methods=["GET", "POST"])
 def scan_page():
     result = None
     file_info = None
-    
+
     if request.method == "POST":
         scan_data = {
             "time": datetime.datetime.now(),
-            "user_id": session.get('user', {}).get('email')  # Link to user if logged in
+            # Link to user if logged in
+            "user_id": session.get('user', {}).get('email')
         }
 
         if "file" in request.files:
@@ -167,9 +195,9 @@ def scan_page():
                 file.seek(0, 2)
                 size_bytes = file.tell()
                 file.seek(0)
-                
+
                 result, diagnostics = detect_file(file.filename, size_bytes)
-                
+
                 scan_data.update({
                     "file": file.filename,
                     "result": result,
@@ -181,8 +209,9 @@ def scan_page():
         elif "url" in request.form:
             url = request.form["url"]
             result, diagnostics = detect_url(url)
-            file_info = {"name": url, "size": "N/A", "type": "URL", "hash": "N/A"}
-            
+            file_info = {"name": url, "size": "N/A",
+                         "type": "URL", "hash": "N/A"}
+
             scan_data.update({
                 "file": url,
                 "result": result,
@@ -194,14 +223,15 @@ def scan_page():
         if result:
             # Save to MongoDB
             inserted_scan = mongo.db.scans.insert_one(scan_data)
-            
+
             # Save to Session for Download Report (Linked to DB record)
             session['last_scan'] = {
                 "id": str(inserted_scan.inserted_id),
                 "file": scan_data['file'],
                 "result": scan_data['result'],
                 "time": str(scan_data['time']),
-                "meta": file_info
+                "meta": file_info,
+                "diagnostics": diagnostics
             }
 
     # Clear session if starting new scan
@@ -209,23 +239,28 @@ def scan_page():
         session.pop('last_scan', None)
 
     # GET Request: Check if we have a previous scan to show (e.g. returning from login)
+    diagnostics = None
     if request.method == "GET" and "last_scan" in session:
         last = session["last_scan"]
         result = last.get("result")
         file_info = last.get("meta")
+        diagnostics = last.get("diagnostics")
 
-    return render_template("scan.html", result=result, file_info=file_info, user=session.get('user'))
+    return render_template("scan.html", result=result, file_info=file_info, diagnostics=diagnostics, user=session.get('user'))
+
 
 @app.route("/history")
 def history():
     # History is now handled client-side (sessionStorage) for anonymity
     return render_template("history.html", scans=[], user=session.get('user'))
 
+
 @app.route("/about")
 def about():
     return render_template("about.html", user=session.get('user'))
 
 # --- AUTH ROUTES ---
+
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -243,8 +278,9 @@ def login():
             username = user.get('username')
             if not username:
                 username = clean_username(user['email'])
-                mongo.db.users.update_one({"_id": user['_id']}, {"$set": {"username": username}})
-            
+                mongo.db.users.update_one({"_id": user['_id']}, {
+                                          "$set": {"username": username}})
+
             # Login successful
             session['user'] = {
                 "name": user["name"],
@@ -257,17 +293,18 @@ def login():
             return_to = session.pop('return_to', None)
             if not return_to and 'last_scan' in session:
                 return_to = 'scan_page'
-            
+
             target = return_to if return_to else 'dashboard'
             try:
                 dest = url_for(target)
-            except:
+            except Exception:
                 dest = url_for('dashboard')
             return redirect(dest)
         else:
             flash("Invalid email or password", "error")
 
     return render_template("login.html")
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -280,8 +317,8 @@ def signup():
         password = request.form.get('password')
 
         if not name or not email or not password:
-             flash("All fields are required", "error")
-             return render_template("signup.html")
+            flash("All fields are required", "error")
+            return render_template("signup.html")
 
         # Check if user exists
         existing_user = mongo.db.users.find_one({"email": email})
@@ -304,23 +341,26 @@ def signup():
 
     return render_template("signup.html")
 
+
 @app.route('/auth/google')
 def google_login():
     redirect_uri = url_for('auth_callback', _external=True)
     return google.authorize_redirect(redirect_uri)
 
+
 @app.route('/auth/callback')
 def auth_callback():
     try:
         token = google.authorize_access_token()
-        print(f"GOOGLE TOKEN RECEIVED: {token}") # Debug print
-        
+        print(f"GOOGLE TOKEN RECEIVED: {token}")  # Debug print
+
         user_info = token.get('userinfo')
-        print(f"USER INFO EXTRACTED: {user_info}") # Debug print
+        print(f"USER INFO EXTRACTED: {user_info}")  # Debug print
 
         if not user_info:
             # Fallback: try to fetch userinfo endpoint manually if not in token
-            user_info = google.get('https://openidconnect.googleapis.com/v1/userinfo').json()
+            user_info = google.get(
+                'https://openidconnect.googleapis.com/v1/userinfo').json()
             print(f"USER INFO FETCHED MANUAL: {user_info}")
 
         if user_info:
@@ -343,17 +383,17 @@ def auth_callback():
             user_info['username'] = username
             session['user'] = user_info
             print("SESSION USER SET SUCCESSFULLY")
-            
+
             # Redirect to previous page if set, else dashboard
             # Smart Redirect: Explicit intent > Recent Scan context > Dashboard
             return_to = session.pop('return_to', None)
             if not return_to and 'last_scan' in session:
                 return_to = 'scan_page'
-            
+
             target = return_to if return_to else 'dashboard'
             try:
                 dest = url_for(target)
-            except:
+            except Exception:
                 dest = url_for('dashboard')
             return redirect(dest)
         else:
@@ -364,10 +404,12 @@ def auth_callback():
         flash(f"Authentication failed: {str(e)}", "error")
         return redirect(url_for('login'))
 
+
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('dashboard'))
+
 
 @app.route('/profile')
 def profile_redirect():
@@ -377,53 +419,58 @@ def profile_redirect():
         return redirect(url_for('profile', username=username))
     return redirect(url_for('login'))
 
+
 @app.route('/profile/<username>')
 def profile(username):
     if 'user' not in session:
         return redirect(url_for('login'))
-    
+
     # Try to fetch user data by username
     user_db = mongo.db.users.find_one({"username": username})
-    
+
     # Fallback: If not found by username, try cleaning the session user's email
     # This fixes issues for users who were logged in BEFORE the username cleanup
     if not user_db and clean_username(session['user']['email']) == username:
         user_db = mongo.db.users.find_one({"email": session['user']['email']})
         if user_db:
             # Update the DB to the new clean username format
-            mongo.db.users.update_one({"_id": user_db['_id']}, {"$set": {"username": username}})
+            mongo.db.users.update_one({"_id": user_db['_id']}, {
+                                      "$set": {"username": username}})
             # Also update session
             session['user']['username'] = username
             session.modified = True
-            
+
     if not user_db:
         flash("User profile not found.", "error")
         return redirect(url_for('dashboard'))
-        
+
     # Fetch user's personal history
-    user_scans = list(mongo.db.scans.find({"user_id": user_db['email']}).sort("time", -1).limit(20))
-    
+    user_scans = list(mongo.db.scans.find(
+        {"user_id": user_db['email']}).sort("time", -1).limit(20))
+
     return render_template("profile.html", user_info=user_db, scans=user_scans, user=session.get('user'))
+
 
 @app.route('/update_profile', methods=['POST'])
 def update_profile():
     if 'user' not in session:
         return redirect(url_for('login'))
-    
+
     user_email = session['user']['email']
     new_name = request.form.get('name')
     new_pic_url = request.form.get('picture_url')
     file = request.files.get('picture_file')
-    
+
     update_data = {}
     if new_name:
         update_data['name'] = new_name
         # Update session name if present
         if 'user' in session:
             session['user']['name'] = new_name
-        
+
     if file and file.filename != '':
-        filename = secure_filename(f"{hashlib.md5(user_email.encode()).hexdigest()}_{file.filename}")
+        filename = secure_filename(
+            f"{hashlib.md5(user_email.encode()).hexdigest()}_{file.filename}")
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(file_path)
         # Use web-accessible path
@@ -438,10 +485,9 @@ def update_profile():
     if update_data:
         mongo.db.users.update_one({"email": user_email}, {"$set": update_data})
         flash("Profile updated successfully!", "success")
-    
-    return redirect(url_for('profile'))
 
-import threading
+    return redirect(url_for('profile_redirect'))
+
 
 def send_async_email(app, msg):
     with app.app_context():
@@ -451,16 +497,18 @@ def send_async_email(app, msg):
         except Exception as e:
             print(f" [BACKGROUND] EMAIL ERROR: {e}")
 
+
 @app.route('/forgot-password', methods=['GET', 'POST'])
 def forgot_password():
     if request.method == 'POST':
         email = request.form.get('email', '').lower().strip()
-        print(f"\n [DEBUG] Forgot Password REQUEST for: '{email}'") 
-        
+        print(f"\n [DEBUG] Forgot Password REQUEST for: '{email}'")
+
         user = mongo.db.users.find_one({"email": email})
         if user:
-            print(f" [DEBUG] SUCCESS: User found in DB (ID: {user.get('_id')})")
-            
+            print(
+                f" [DEBUG] SUCCESS: User found in DB (ID: {user.get('_id')})")
+
             # Generate a secure token
             token = secrets.token_urlsafe(32)
             mongo.db.users.update_one(
@@ -470,15 +518,15 @@ def forgot_password():
                     "reset_token_expires": datetime.datetime.now() + datetime.timedelta(hours=1)
                 }}
             )
-            
+
             reset_link = url_for('reset_password', token=token, _external=True)
-            
+
             # --- ALWAYS PRINT LINK ---
-            print("="*60)
+            print("=" * 60)
             print(f" [DEBUG] LINK GENERATED: {reset_link}")
-            print("="*60)
+            print("=" * 60)
             # -------------------------
-            
+
             # Send Email Synchronously (Blocking) so we know if it fails
             try:
                 print(f" [DEBUG] Attempting to send email to {email}...")
@@ -487,21 +535,58 @@ def forgot_password():
                     recipients=[email],
                     body=f"Click the link to reset your password: {reset_link}\n\nIf you did not request this, please ignore this email."
                 )
+                
+                # Beautiful HTML version
+                msg.html = f"""
+                <!DOCTYPE html>
+                <html>
+                <head>
+                <style>
+                body {{ font-family: 'Inter', Arial, sans-serif; background-color: #f3f4f6; padding: 20px; }}
+                .container {{ max-width: 600px; margin: 0 auto; background-color: #ffffff; padding: 40px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }}
+                .logo {{ text-align: center; font-size: 24px; font-weight: bold; color: #3b82f6; margin-bottom: 30px; }}
+                h2 {{ color: #111827; font-size: 20px; margin-bottom: 20px; text-align: center; }}
+                p {{ color: #4b5563; line-height: 1.6; font-size: 16px; margin-bottom: 25px; text-align: center; }}
+                .btn-container {{ text-align: center; margin: 30px 0; }}
+                .btn {{ display: inline-block; padding: 14px 30px; background-color: #000000; color: #ffffff !important; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; }}
+                .footer {{ margin-top: 40px; text-align: center; font-size: 13px; color: #9ca3af; border-top: 1px solid #f3f4f6; padding-top: 20px; }}
+                </style>
+                </head>
+                <body>
+                <div class="container">
+                    <div class="logo">MalVisionAI</div>
+                    <h2>Password Reset Request</h2>
+                    <p>We received a request to reset the password for your MalVisionAI account. Click the button below to choose a new password.</p>
+                    <div class="btn-container">
+                        <a href="{reset_link}" class="btn">Reset My Password</a>
+                    </div>
+                    <p style="font-size: 14px; margin-top: 30px;">If you didn't request a password reset, you can safely ignore this email. Your password will remain unchanged.</p>
+                    <div class="footer">
+                        &copy; 2026 MalVisionAI. All rights reserved.<br>
+                        This is an automated message, please do not reply.
+                    </div>
+                </div>
+                </body>
+                </html>
+                """
                 mail.send(msg)
                 print(f" [DEBUG] EMAIL SENT SUCCESSFULLY to {email}")
                 flash(f"Reset link sent to {email}", "success")
             except Exception as e:
                 print(f" [ERROR] EMAIL FAILED: {e}")
-                flash(f"Error sending email. Please use the link printed in the terminal.", "error")
+                flash(
+                    "Error sending email. Please use the link printed in the terminal.", "error")
 
         else:
-            print(f" [DEBUG] FAILURE: User '{email}' does NOT exist in the database.")
+            print(
+                f" [DEBUG] FAILURE: User '{email}' does NOT exist in the database.")
             # We still show success to the user (security best practice), but we know in logs it failed.
-            flash("If an account exists, a reset link has been sent.", "success") 
-            
+            flash("If an account exists, a reset link has been sent.", "success")
+
         return redirect(url_for('login'))
-        
+
     return render_template("forgot_password.html")
+
 
 @app.route('/contact', methods=['GET', 'POST'])
 def contact():
@@ -510,13 +595,14 @@ def contact():
         name = request.form.get('name')
         email = request.form.get('email')
         message = request.form.get('message')
-        
+
         # Log it for now
         print(f"CONTACT FORM: From {name} ({email}): {message}")
         flash("Message sent! We'll get back to you shortly.", "success")
         return redirect(url_for('contact'))
-        
+
     return render_template("contact.html")
+
 
 @app.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
@@ -524,41 +610,42 @@ def reset_password(token):
         "reset_token": token,
         "reset_token_expires": {"$gt": datetime.datetime.now()}
     })
-    
+
     if not user:
         flash("Invalid or expired reset link.", "error")
         return redirect(url_for('forgot_password'))
-        
+
     if request.method == 'POST':
         password = request.form.get('password')
         confirm_password = request.form.get('confirm_password')
-        
+
         if password != confirm_password:
-             flash("Passwords do not match.", "error")
+            flash("Passwords do not match.", "error")
         else:
             hashed_password = generate_password_hash(password)
             mongo.db.users.update_one(
                 {"_id": user['_id']},
-                {"$set": {"password_hash": hashed_password}, "$unset": {"reset_token": "", "reset_token_expires": ""}}
+                {"$set": {"password_hash": hashed_password}, "$unset": {
+                    "reset_token": "", "reset_token_expires": ""}}
             )
             flash("Password updated successfully! Please log in.", "success")
             return redirect(url_for('login'))
 
     return render_template("reset_password.html")
 
-from fpdf import FPDF
 
 class PDFReport(FPDF):
     def header(self):
         # Logo (if you had one, self.image('logo.png', 10, 8, 33))
         self.set_font('Arial', 'B', 15)
         # Title
-        self.set_text_color(59, 130, 246) # Primary Blue
+        self.set_text_color(59, 130, 246)  # Primary Blue
         self.cell(0, 10, 'MalVision AI', 0, 1, 'L')
         self.set_font('Arial', '', 10)
         self.set_text_color(128, 128, 128)
         self.cell(0, 5, 'AI-Powered Cybersecurity Threat Detection', 0, 1, 'L')
-        self.cell(0, 5, 'ML Syndicate, AIML Students | support@malvisionai.in', 0, 1, 'L')
+        self.cell(
+            0, 5, 'ML Syndicate, AIML Students | support@malvisionai.in', 0, 1, 'L')
         self.ln(5)
         self.set_draw_color(59, 130, 246)
         self.line(10, 35, 200, 35)
@@ -568,51 +655,61 @@ class PDFReport(FPDF):
         self.set_y(-15)
         self.set_font('Arial', 'I', 8)
         self.set_text_color(128)
-        self.cell(0, 10, f'Page {self.page_no()} - Confidential Report Generated by MalVision AI', 0, 0, 'C')
+        self.cell(
+            0, 10, f'Page {self.page_no()} - Confidential Report Generated by MalVision AI', 0, 0, 'C')
+
 
 @app.route('/download_report_history/<scan_id>')
 def download_report_history(scan_id):
     if 'user' not in session:
         flash("Please log in to download reports.", "info")
         return redirect(url_for('login'))
-    
-    scan = mongo.db.scans.find_one({"_id": ObjectId(scan_id), "user_id": session['user']['email']})
+
+    scan = mongo.db.scans.find_one({"_id": ObjectId(scan_id)})
     if not scan:
         flash("Scan not found.", "error")
-        return redirect(url_for('profile'))
+        return redirect(url_for('profile_redirect'))
+
+    last_scan_id = session.get('last_scan', {}).get('id')
+    
+    # Check permission: Must own the scan OR it must be the scan they just did anonymously
+    if scan.get('user_id') != session['user']['email'] and last_scan_id != scan_id:
+        flash("You do not have permission to download this report.", "error")
+        return redirect(url_for('dashboard'))
 
     user = session['user']
     pdf = PDFReport()
     pdf.add_page()
-    
+
     # Title
     pdf.set_font('Arial', 'B', 16)
     pdf.set_text_color(0, 0, 0)
     pdf.cell(0, 10, 'THREAT DETECTION ANALYSIS REPORT', 0, 1, 'C')
     pdf.ln(5)
-    
+
     # Scan Result Box
     is_malicious = scan['result'] == 'Malicious'
-    color = (220, 38, 38) if is_malicious else (22, 163, 74) # Red or Green
+    color = (220, 38, 38) if is_malicious else (22, 163, 74)  # Red or Green
     status_text = "THREAT DETECTED" if is_malicious else "CLEAN & SAFE"
-    
+
     pdf.set_fill_color(*color)
     pdf.set_text_color(255, 255, 255)
     pdf.set_font('Arial', 'B', 14)
     pdf.cell(0, 15, status_text, 0, 1, 'C', 1)
     pdf.ln(10)
-    
+
     # User & file Info
     pdf.set_text_color(0, 0, 0)
     pdf.set_font('Arial', 'B', 12)
     pdf.cell(0, 10, 'Scan Details', 0, 1, 'L')
-    
+
     pdf.set_font('Arial', '', 10)
-    
+
     # Extract meta safely
     meta = scan.get('meta', {})
-    scan_time = scan['time'].strftime('%Y-%m-%d %H:%M:%S') if hasattr(scan['time'], 'strftime') else str(scan['time'])
-    
+    scan_time = scan['time'].strftime(
+        '%Y-%m-%d %H:%M:%S') if hasattr(scan['time'], 'strftime') else str(scan['time'])
+
     data = [
         ("Analysis Date", scan_time),
         ("Analyzed for", f"{user['name']} ({user['email']})"),
@@ -621,13 +718,13 @@ def download_report_history(scan_id):
         ("File Size", meta.get('size', 'N/A')),
         ("File Type", meta.get('type', 'N/A'))
     ]
-    
+
     for key, value in data:
         pdf.set_font('Arial', 'B', 10)
         pdf.cell(50, 8, key + ":", 0)
         pdf.set_font('Arial', '', 10)
         pdf.cell(0, 8, value, 0, 1)
-        
+
     pdf.ln(5)
 
     # Diagnostic Features Section
@@ -642,18 +739,18 @@ def download_report_history(scan_id):
             pdf.set_font('Arial', '', 10)
             pdf.cell(0, 8, str(val), 0, 1)
         pdf.ln(5)
-    
+
     pdf.set_draw_color(200, 200, 200)
     pdf.line(10, pdf.get_y(), 200, pdf.get_y())
     pdf.ln(5)
     pdf.set_font('Arial', 'I', 9)
     pdf.multi_cell(0, 5, "Disclaimer: This automated report is generated by MalVision AI. While our advanced machine learning models (trained on 5,000+ samples) provide high accuracy, no security solution is 100% perfect. We recommend manual verification for critical systems.")
-    
+
     buffer = io.BytesIO()
     pdf_output = pdf.output(dest='S').encode('latin-1')
     buffer.write(pdf_output)
     buffer.seek(0)
-    
+
     return send_file(
         buffer,
         as_attachment=True,
@@ -661,13 +758,15 @@ def download_report_history(scan_id):
         mimetype='application/pdf'
     )
 
+
 @app.route('/download_report')
 def download_report():
     if 'last_scan' in session and 'id' in session['last_scan']:
         return redirect(url_for('download_report_history', scan_id=session['last_scan']['id']))
-    
+
     flash("No recent scan found to download.", "error")
     return redirect(url_for('dashboard'))
+
 
 if __name__ == "__main__":
     app.run(debug=True, use_reloader=True)

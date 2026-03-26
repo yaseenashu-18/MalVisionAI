@@ -1,199 +1,157 @@
 {% extends "base.html" %}
 {% block content %}
+<style>
+    .luxury-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 4rem 1.5rem;
+    }
 
-<div class="profile-container fade-in" style="padding: 4rem 2rem; max-width: 1000px; margin: 0 auto;">
-
-    <!-- Profile Header Card -->
-    <div class="profile-card" style="
-        background: rgba(22, 27, 34, 0.6);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 20px;
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        border-radius: 24px;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.05);
         padding: 3rem;
+        margin-bottom: 2rem;
+        transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .data-table-row {
         display: flex;
         align-items: center;
-        gap: 3rem;
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-        position: relative;
-        margin-bottom: 3rem;
-    ">
-        <!-- Interactive Profile Picture with Pencil Icon -->
-        <div class="profile-pic-wrapper" style="position: relative;">
-            <input type="file" id="pic_file_input" accept="image/*" style="display: none;"
-                onchange="handleFileSelect(event)">
+        justify-content: space-between;
+        padding: 1.5rem;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.2s;
+    }
 
-            <div style="position: relative; width: 140px; height: 140px;">
-                <img id="profile-display-img" src="{{ user_info.picture }}" alt="Profile" style="
-                    width: 140px;
-                    height: 140px;
-                    border-radius: 50%;
-                    object-fit: cover;
-                    border: 3px solid #6366f1;
-                    box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
-                ">
+    .data-table-row:last-child {
+        border-bottom: none;
+    }
 
-                <!-- Pencil Icon Overlay (Only this handles the click now) -->
-                <div onclick="document.getElementById('pic_file_input').click()" style="
-                    position: absolute;
-                    bottom: 5px;
-                    right: 5px;
-                    background: #6366f1;
-                    width: 35px;
-                    height: 35px;
-                    border-radius: 50%;
-                    border: 3px solid #161b22;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    color: white;
-                    font-size: 0.9rem;
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                " title="Update Profile Picture"
-                    onmouseover="this.style.transform='scale(1.1)'; this.style.background='#4f46e5'"
-                    onmouseout="this.style.transform='scale(1)'; this.style.background='#6366f1'">
-                    <i class="fa-solid fa-pencil"></i>
+    .data-table-row:hover {
+        background: #F9FAFB;
+        border-radius: 16px;
+        border-bottom-color: transparent;
+    }
+
+    .status-badge {
+        font-weight: 700;
+        padding: 0.4rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .status-malicious { color: #FF3B30; background: rgba(255, 59, 48, 0.1); }
+    .status-safe { color: #34C759; background: rgba(52, 199, 89, 0.1); }
+</style>
+
+<div class="luxury-container fade-in">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; font-weight: 800; color: #000; letter-spacing: -1.5px; margin: 0;">Account</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; margin-top: 0.5rem; font-weight: 500;">Manage your identity and review your personal security log.</p>
+    </div>
+
+    <!-- Minimal Profile Card -->
+    <div class="glass-card" style="display: flex; align-items: center; gap: 2.5rem;">
+        <div class="profile-pic-wrapper" style="position: relative; width: 120px; height: 120px; flex-shrink: 0;">
+            <input type="file" id="pic_file_input" accept="image/*" style="display: none;" onchange="handleFileSelect(event)">
+            <img id="profile-display-img" src="{{ user_info.picture }}" alt="Profile" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border: 2px solid white;">
+            
+            <div onclick="document.getElementById('pic_file_input').click()" style="position: absolute; bottom: 0; right: 0; background: #000; width: 36px; height: 36px; border-radius: 50%; border: 3px solid #FFF; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.9rem; cursor: pointer; transition: transform 0.2s;" title="Update Profile Picture" onmouseover="this.style.transform='scale(1.1)';" onmouseout="this.style.transform='scale(1)';">
+                <i class="fa-solid fa-camera"></i>
+            </div>
+        </div>
+
+        <div style="flex: 1;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; color: #000; letter-spacing: -0.5px; margin: 0 0 0.2rem 0;">{{ user_info.name }}</h2>
+            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 500; margin: 0 0 1.5rem 0;">{{ user_info.email }}</p>
+            
+            <div style="display: flex; gap: 1rem;">
+                <div style="background: rgba(0, 0, 0, 0.05); color: #000; padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;">
+                    <i class="fa-solid fa-cloud"></i> Session Active
                 </div>
             </div>
         </div>
-
-        <div class="user-info" style="flex: 1;">
-            <h1 style="font-size: 2.8rem; font-weight: 700; color: #fff; margin: 0 0 0.5rem 0;">
-                {{ user_info.name }}
-            </h1>
-
-            <p
-                style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 1.2rem; display: flex; align-items: center; gap: 0.8rem;">
-                <i class="fa-solid fa-envelope" style="color: #6366f1;"></i> {{ user_info.email }}
-            </p>
-
-            <div
-                style="background: rgba(255,255,255,0.05); width: fit-content; padding: 0.5rem 1.2rem; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; gap: 0.6rem;">
-                <i class="fa-solid fa-shield-halved" style="color: #10b981; font-size: 0.8rem;"></i>
-                <span
-                    style="color: #cbd5e1; font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px;">User</span>
-            </div>
-        </div>
     </div>
 
-    <!-- Image Cropper Modal -->
-    <div id="cropperModal"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; align-items: center; justify-content: center; flex-direction: column;">
-        <div
-            style="max-width: 90%; max-height: 70%; background: #161b22; padding: 1rem; border-radius: 12px; position: relative;">
-            <img id="cropperImage" style="max-width: 100%; display: block;">
+    <!-- Minimal Scan History -->
+    <div class="glass-card" style="padding: 0;">
+        <div style="padding: 2.5rem; border-bottom: 1px solid rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: #000; margin: 0; letter-spacing: -0.5px;">Recent Scans</h3>
+            <a href="/scan?new=true" style="color: var(--primary); font-weight: 700; text-decoration: none; font-size: 0.9rem; background: rgba(0,122,255,0.1); padding: 0.5rem 1rem; border-radius: 20px;">
+                <i class="fa-solid fa-plus" style="margin-right: 4px;"></i> New Scan
+            </a>
         </div>
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-            <button onclick="closeCropper()"
-                style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 0.8rem 2rem; border-radius: 8px; cursor: pointer;">Cancel</button>
-            <button onclick="applyCrop()"
-                style="background: #6366f1; border: none; color: white; padding: 0.8rem 3rem; border-radius: 8px; font-weight: 700; cursor: pointer;">Apply
-                & Update</button>
-        </div>
-        <p style="color: #64748b; margin-top: 1rem; font-size: 0.9rem;">Drag to move, scroll to zoom</p>
-    </div>
-
-    <!-- Simpler Recent Activity Section -->
-    <div class="activity-section" style="text-align: center;">
-        <h2
-            style="color: #fff; font-size: 1.8rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: center; gap: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
-            <i class="fa-solid fa-clock-rotate-left" style="color: #94a3b8; font-size: 1.3rem;"></i> Recent Activity
-        </h2>
 
         {% if scans %}
-        <div class="table-container" style="
-            background: rgba(22, 27, 34, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            overflow: hidden;
-            max-width: 900px;
-            margin: 0 auto;
-        ">
-            <table style="width: 100%; border-collapse: collapse; text-align: left;">
-                <thead>
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <th style="padding: 1.2rem; color: #64748b; font-size: 0.8rem; text-transform: uppercase;">
-                            File/URL</th>
-                        <th
-                            style="padding: 1.2rem; text-align: center; color: #64748b; font-size: 0.8rem; text-transform: uppercase;">
-                            Result</th>
-                        <th
-                            style="padding: 1.2rem; text-align: center; color: #64748b; font-size: 0.8rem; text-transform: uppercase;">
-                            Report</th>
-                        <th
-                            style="padding: 1.2rem; text-align: right; color: #64748b; font-size: 0.8rem; text-transform: uppercase;">
-                            Date</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for scan in scans %}
-                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.02);">
-                        <td style="padding: 1.2rem; color: #e2e8f0;">{{ scan.file }}</td>
-                        <td style="padding: 1.2rem; text-align: center;">
-                            <span
-                                class="status-badge {% if scan.result == 'Malicious' %}status-malicious{% else %}status-safe{% endif %}">
-                                {{ scan.result }}
-                            </span>
-                        </td>
-                        <td style="padding: 1.2rem; text-align: center;">
-                            <a href="/download_report_history/{{ scan._id }}" title="Download Analysis Report" style="
-                                color: #6366f1;
-                                font-size: 1.1rem;
-                                transition: all 0.2s;
-                                display: inline-flex;
-                                align-items: center;
-                                justify-content: center;
-                                width: 35px;
-                                height: 35px;
-                                border-radius: 8px;
-                                background: rgba(99, 102, 241, 0.1);
-                                text-decoration: none;
-                            " onmouseover="this.style.background='rgba(99, 102, 241, 0.2)'; this.style.transform='translateY(-2px)'"
-                                onmouseout="this.style.background='rgba(99, 102, 241, 0.1)'; this.style.transform='translateY(0)'">
-                                <i class="fa-solid fa-file-pdf"></i>
-                            </a>
-                        </td>
-                        <td style="padding: 1.2rem; text-align: right; color: #64748b; font-size: 0.85rem;">
-                            {{ scan.time.strftime('%Y-%m-%d %H:%M') if scan.time.strftime else scan.time }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div style="padding: 1rem 1.5rem 1.5rem;">
+            {% for scan in scans %}
+            <div class="data-table-row">
+                <div style="display: flex; align-items: center; gap: 1.2rem; flex: 1;">
+                    <div style="width: 40px; height: 40px; background: rgba(0,0,0,0.03); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--text-muted);">
+                        <i class="fa-solid fa-file" style="font-size: 1.1rem;"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="color: #000; font-weight: 700; font-size: 1rem; letter-spacing: -0.2px;">{{ scan.file }}</span>
+                        <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500; margin-top: 0.2rem;">
+                            {{ scan.time.strftime('%b %d, %Y') if scan.time.strftime else scan.time }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <span class="status-badge {% if scan.result == 'Malicious' %}status-malicious{% else %}status-safe{% endif %}">
+                        {{ scan.result }}
+                    </span>
+                    <a href="/download_report_history/{{ scan._id }}" title="Download PDF Report" style="color: #000; font-size: 1.2rem; transition: transform 0.2s; text-decoration: none; width: 36px; height: 36px; background: rgba(0,0,0,0.05); border-radius: 50%; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                        <i class="fa-solid fa-download" style="font-size: 0.9rem;"></i>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
         </div>
         {% else %}
-        <div style="padding: 3rem; color: #64748b;">
-            <p>No activity found.</p>
+        <div style="padding: 5rem 2.5rem; text-align: center;">
+            <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" alt="Empty" style="width: 80px; opacity: 0.3; margin-bottom: 1.5rem; filter: grayscale(1);">
+            <h4 style="color: #000; font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem;">No Scans Yet</h4>
+            <p style="color: var(--text-muted); font-size: 1rem;">Your history is clear. Run a scan to build your log.</p>
         </div>
         {% endif %}
     </div>
+</div>
 
+<!-- Image Cropper Modal (iOS Clean Style) -->
+<div id="cropperModal"
+    style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 10000; align-items: center; justify-content: center; flex-direction: column;">
+    <div
+        style="max-width: 90%; max-height: 70%; background: #FFF; padding: 10px; border-radius: 20px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.4);">
+        <img id="cropperImage" style="max-width: 100%; display: block;">
+    </div>
+    <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem; width: 90%; max-width: 300px;">
+        <button onclick="applyCrop()" class="btn-primary" style="width: 100%; justify-content: center; background: #000; color: white; border: none; padding: 1rem; border-radius: 30px; font-weight: 700; cursor: pointer; font-size: 1rem;">Apply Changes</button>
+        <button onclick="closeCropper()"
+            style="background: rgba(255,255,255,0.15); border: none; color: white; padding: 1rem; border-radius: 30px; font-weight: 600; cursor: pointer; font-size: 1rem;">Cancel</button>
+    </div>
 </div>
 
 <!-- Hidden form for submission -->
 <form id="cropped-form" action="/update_profile" method="POST" enctype="multipart/form-data" style="display: none;">
     <input type="file" name="picture_file" id="cropped_file_input">
 </form>
-
-<style>
-    .status-badge {
-        font-weight: 600;
-        padding: 0.3rem 0.8rem;
-        border-radius: 6px;
-        font-size: 0.85rem;
-    }
-
-    .status-malicious {
-        color: #ef4444;
-        background: rgba(239, 68, 68, 0.1);
-    }
-
-    .status-safe {
-        color: #10b981;
-        background: rgba(16, 185, 129, 0.1);
-    }
-</style>
 
 <script>
     let cropper;
@@ -209,20 +167,16 @@
                 image.src = e.target.result;
                 modal.style.display = 'flex';
 
-                // Initialize Cropper
                 if (cropper) cropper.destroy();
                 cropper = new Cropper(image, {
                     aspectRatio: 1,
                     viewMode: 2,
-                    guides: true,
+                    guides: false,
                     center: true,
                     highlight: false,
                     cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    toggleDragModeOnDblclick: false,
-                    ready: function () {
-                        console.log('Cropper ready');
-                    }
+                    cropBoxResizable: false,
+                    toggleDragModeOnDblclick: false
                 });
             };
             reader.readAsDataURL(file);
@@ -237,23 +191,15 @@
 
     function applyCrop() {
         if (!cropper) return;
-
-        const canvas = cropper.getCroppedCanvas({
-            width: 400,
-            height: 400
-        });
-
+        const canvas = cropper.getCroppedCanvas({ width: 400, height: 400 });
         canvas.toBlob((blob) => {
             const fileInput = document.getElementById('cropped_file_input');
             const dataTransfer = new DataTransfer();
             const file = new File([blob], "profile_picture.png", { type: "image/png" });
             dataTransfer.items.add(file);
             fileInput.files = dataTransfer.files;
-
-            // Submit the form
             document.getElementById('cropped-form').submit();
         }, 'image/png');
     }
 </script>
-
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="about-page-wrapper" style="background: #000; min-height: 100vh; color: #fff; padding: 8rem 0;">
+<div class="about-page-wrapper" style="background: #F6F5F1; min-height: 100vh; color: #1C1C1C; padding: 10rem 0;">
     <div class="about-container" style="
         display: flex;
         max-width: 1400px;
@@ -10,36 +10,37 @@
         gap: 8rem;
     ">
         <!-- Sticky Sidebar Header -->
-        <div class="about-sidebar" style="flex: 0 0 320px;">
-            <div style="position: sticky; top: 8rem;">
+        <div class="about-sidebar" style="flex: 0 0 350px;">
+            <div style="position: sticky; top: 10rem;">
                 <h1 style="
-                    font-family: 'Orbitron', sans-serif;
-                    font-size: 4.8rem;
-                    line-height: 1;
-                    color: #fff;
+                    font-family: var(--font-luxury);
+                    font-size: 5.5rem;
+                    line-height: 0.85;
+                    color: #1C1C1C;
                     margin: 0;
                     text-align: left;
                     font-weight: 700;
-                    text-transform: none;
-                    letter-spacing: -1px;
+                    text-transform: uppercase;
+                    letter-spacing: -3px;
                 ">
-                    Meet Our<br>Team
+                    The<br>Architects
                 </h1>
 
                 <p style="
-                    font-family: 'Inter', sans-serif;
-                    color: #64748b;
-                    font-size: 1.15rem;
+                    font-family: var(--font-main);
+                    color: #666;
+                    font-size: 1.05rem;
                     text-align: left;
-                    margin: 2.5rem 0 0 0;
-                    line-height: 1.6;
-                    max-width: 300px;
+                    margin: 3.5rem 0;
+                    line-height: 1.8;
+                    max-width: 320px;
+                    font-weight: 500;
                 ">
                     A collaborative squadron of cybersecurity experts and AI engineers dedicated to pioneering the next
-                    generation of threat detection.
+                    generation of threat detection protocols. MalVisionAI is at the forefront of digital defense.
                 </p>
 
-                <div style="margin-top: 3rem; width: 60px; height: 4px; background: #6366f1; border-radius: 2px;"></div>
+                <div style="width: 40px; height: 1px; background: #1C1C1C;"></div>
             </div>
         </div>
 
@@ -48,7 +49,7 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 4rem 2.5rem;
+            gap: 5rem 3rem;
         ">
             {% for member in [
             {'name': 'Maksud Vohra', 'role': 'Project Guide & Mentor'},
@@ -58,67 +59,61 @@
             {'name': 'Saketh', 'role': 'Frontend Visionary'},
             {'name': 'Srinath', 'role': 'Data Infrastructure Engineer'}
             ] %}
-            <div class="team-member-card"
-                style="transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: default;">
+            <div class="team-member-card" style="transition: all 0.4s ease; cursor: default;">
                 <div class="member-image-container" style="
-                    aspect-ratio: 16/19;
-                    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-                    border-radius: 20px;
+                    aspect-ratio: 4/5;
+                    background: #FAFAF8;
+                    border: 1px solid rgba(28, 28, 28, 0.05);
+                    border-radius: 4px;
                     overflow: hidden;
-                    margin-bottom: 1.5rem;
+                    margin-bottom: 2rem;
                     position: relative;
-                    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    transition: all 0.4s ease;
                 ">
                     <!-- Stylish Placeholder Icon -->
                     <i class="fa-solid fa-user-shield" style="
-                        font-size: 5rem;
-                        color: rgba(99, 102, 241, 0.2);
-                        transition: all 0.6s ease;
-                    " class="member-placeholder-icon"></i>
+                        font-size: 4rem;
+                        color: #E6E6E6;
+                        transition: all 0.4s ease;
+                    "></i>
 
-                    <!-- Hover Accent Border -->
-                    <div class="hover-border" style="
+                    <!-- Subtle Reveal Border -->
+                    <div class="hover-accent" style="
                         position: absolute;
-                        inset: 0;
-                        border: 2px solid #6366f1;
-                        border-radius: 20px;
-                        opacity: 0;
-                        transition: opacity 0.4s ease;
-                        pointer-events: none;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 0;
+                        background: #1C1C1C;
+                        transition: all 0.4s ease;
+                        opacity: 0.05;
                     "></div>
                 </div>
 
                 <h3 style="
-                    font-family: 'Inter', sans-serif;
-                    font-size: 1.3rem;
+                    font-family: var(--font-luxury);
+                    font-size: 1.4rem;
                     font-weight: 700;
-                    color: #fff;
-                    margin: 0 0 0.5rem 0;
+                    color: #1C1C1C;
+                    margin: 0 0 0.4rem 0;
                     text-align: left;
-                    transition: color 0.3s ease;
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
                 ">{{ member.name }}</h3>
 
                 <p style="
-                    font-family: 'Inter', sans-serif;
-                    font-size: 0.85rem;
-                    font-weight: 500;
-                    color: #94a3b8;
-                    text-transform: none;
+                    font-family: var(--font-main);
+                    font-size: 0.75rem;
+                    font-weight: 700;
+                    color: #999;
+                    text-transform: uppercase;
                     text-align: left;
                     margin: 0;
-                    line-height: 1;
+                    letter-spacing: 1.8px;
                 ">{{ member.role }}</p>
-
-                <p style="
-                    font-family: 'Inter', sans-serif;
-                    font-size: 0.85rem;
-                    color: #475569;
-                    text-align: left;
-                    margin-top: 0.2rem;
-                ">MalVisionAI Team</p>
             </div>
             {% endfor %}
         </div>
@@ -127,24 +122,25 @@
 
 <style>
     .team-member-card:hover {
-        transform: translateY(-8px);
+        transform: translateY(-10px);
     }
 
-    .team-member-card:hover .member-img {
-        transform: scale(1.04);
-        filter: grayscale(0);
+    .team-member-card:hover .member-image-container {
+        background: #FFF;
+        box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+        border-color: #1C1C1C;
     }
 
-    .team-member-card:hover .hover-border {
-        opacity: 0.4;
+    .team-member-card:hover .fa-user-shield {
+        color: #1C1C1C;
+        transform: scale(1.1);
     }
 
-    .team-member-card:hover h3 {
-        color: #6366f1;
+    .team-member-card:hover .hover-accent {
+        height: 100%;
     }
 
-    /* Responsive adjustment */
-    @media (max-width: 1300px) {
+    @media (max-width: 1200px) {
         .about-sidebar {
             flex: 0 0 280px;
         }

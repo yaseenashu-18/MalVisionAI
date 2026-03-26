@@ -2,81 +2,79 @@
 {% block content %}
 
 <!-- AWARENESS SECTION -->
-<div class="info-section fade-up" style="margin-top: 3rem;">
-  <h2 class="section-title">WHY CYBERSECURITY?</h2>
-  <div class="hud-card"
-    style="text-align: left; max-width: 800px; margin: 0 auto; background: transparent; border: none; padding: 0;">
-    <p style="color: var(--text-main); font-size: 1.1rem; line-height: 1.8; text-align: center; margin-bottom: 2rem;">
-      In an era of digital connectivity, threats evolve faster than defenses.
-      <strong>MalVisionAI</strong> provides the awareness and tools you need to identify malicious patterns
-      before they strike. Stay informed, stay secure.
-    </p>
-  </div>
-
+<div class="info-section fade-up" style="margin-top: 4rem; padding-top: 0;">
+    <h1
+        style="font-family: var(--font-main); font-size: 2.8rem; font-weight: 800; color: #000; letter-spacing: -1.5px; margin-bottom: 1rem;">
+        Dashboard</h1>
+    <div style="max-width: 700px; margin: 0 auto 3rem;">
+        <p style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.5; font-weight: 400;">
+            Monitor global threats and manage your digital security with MalVision's elite AI protocols.
+        </p>
+    </div>
 </div>
 
 <!-- COMMON SIGNS (Keep for educational value) -->
-<div class="info-section fade-up">
-  <h2 class="section-title">THREAT INDICATORS</h2>
-  <!-- SLIDER CONTAINER -->
-  <div class="slider-container">
-    <div class="slider-track" id="infinite-track">
-      <div class="info-card">
-        <div class="info-icon icon-orange"><i class="fa-solid fa-comments"></i></div>
-        <h3>Lots of Pop-ups</h3>
-        <p>Unexpected ads encouraging you to visit unusual sites.</p>
-      </div>
-      <div class="info-card">
-        <div class="info-icon icon-red"><i class="fa-solid fa-envelope"></i></div>
-        <h3>Mass Emails Sent</h3>
-        <p>Cyberthieves hijack your email to send spam to contacts.</p>
-      </div>
-      <div class="info-card">
-        <div class="info-icon icon-orange"><i class="fa-solid fa-gauge-high"></i></div>
-        <h3>Slow Computer</h3>
-        <p>Malware consumes resources, causing freezes or crashes.</p>
-      </div>
-      <div class="info-card">
-        <div class="info-icon icon-red"><i class="fa-solid fa-key"></i></div>
-        <h3>Password Changes</h3>
-        <p>Your password suddenly changes without your action.</p>
-      </div>
-      <div class="info-card">
-        <div class="info-icon icon-orange"><i class="fa-solid fa-triangle-exclamation"></i></div>
-        <h3>Frequent Crashes</h3>
-        <p>System freezes or blue screens occur regularly.</p>
-      </div>
-      <div class="info-card">
-        <div class="info-icon icon-red"><i class="fa-solid fa-house-laptop"></i></div>
-        <h3>Homepage Changed</h3>
-        <p>Your browser homepage is different than you set it.</p>
-      </div>
+<div class="info-section fade-up" style="margin-top: 2rem;">
+    <h2
+        style="font-family: var(--font-main); font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 2rem; border: none;">
+        Threat Indicators</h2>
+    <!-- SLIDER CONTAINER -->
+    <div class="slider-container">
+        <div class="slider-track" id="infinite-track">
+            {% for item in [
+            {'icon': 'fa-comments', 'color': 'icon-orange', 'title': 'Lots of Pop-ups', 'desc': 'Unexpected ads
+            encouraging you to visit unusual sites.'},
+            {'icon': 'fa-envelope', 'color': 'icon-red', 'title': 'Mass Emails Sent', 'desc': 'Cyberthieves hijack your
+            email to send spam to contacts.'},
+            {'icon': 'fa-gauge-high', 'color': 'icon-orange', 'title': 'Slow Computer', 'desc': 'Malware consumes
+            resources, causing freezes or crashes.'},
+            {'icon': 'fa-key', 'color': 'icon-red', 'title': 'Password Changes', 'desc': 'Your password suddenly changes
+            without your action.'},
+            {'icon': 'fa-triangle-exclamation', 'color': 'icon-orange', 'title': 'Frequent Crashes', 'desc': 'System
+            freezes or blue screens occur regularly.'},
+            {'icon': 'fa-house-laptop', 'color': 'icon-red', 'title': 'Homepage Changed', 'desc': 'Your browser homepage
+            is different than you set it.'}
+            ] %}
+            <div class="info-card"
+                style="width: 300px; text-align: left; background: #FFF; border: 1px solid var(--border-color); box-shadow: var(--shadow-ios);">
+                <div class="info-icon {{ item.color }}" style="margin: 0 0 1.5rem 0;"><i
+                        class="fa-solid {{ item.icon }}"></i></div>
+                <h3 style="font-family: var(--font-main); font-weight: 700; color: #000; margin-bottom: 0.5rem;">{{
+                    item.title }}</h3>
+                <p
+                    style="font-family: var(--font-main); color: var(--text-muted); line-height: 1.4; font-size: 0.85rem;">
+                    {{ item.desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- CALL TO ACTION (Prominent Scan Feature) -->
 <div class="cta-section fade-up">
-  <div class="cta-content">
-    <h2 style="color: var(--primary); text-shadow: 0 0 10px rgba(59,130,246,0.5);">READY TO SECURE YOUR DEVICE?</h2>
-    <p>Initialize the scanning protocol to detect hidden threats immediately.</p>
-    <a href="/scan" class="btn-primary-large"
-      style="background: transparent; border: 2px solid var(--primary); color: var(--primary);">
-      <i class="fa-solid fa-crosshairs"></i> INITIATE SCAN PROTOCOL
-    </a>
-  </div>
+    <div class="cta-content">
+        <h2
+            style="font-family: var(--font-main); font-size: 2.2rem; font-weight: 800; color: #000; letter-spacing: -1px; margin-bottom: 1rem;">
+            Ready to secure your device?</h2>
+        <p
+            style="font-family: var(--font-main); color: var(--text-muted); margin-bottom: 3rem; font-weight: 400; font-size: 1.1rem; line-height: 1.5; max-width: 500px; margin-left: auto; margin-right: auto;">
+            Initialize the scanning protocol to detect hidden threats immediately with AI-driven precision.</p>
+        <a href="/scan" class="btn-primary-large">
+            <i class="fa-solid fa-crosshairs"></i> INITIATE SCAN
+        </a>
+    </div>
 </div>
 
 <script>
-  // Automatic Infinite Scroll Setup
-  document.addEventListener("DOMContentLoaded", () => {
-    const track = document.getElementById('infinite-track');
-    if (track) {
-      // Duplicate content to create a seamless loop
-      const content = track.innerHTML;
-      track.innerHTML += content;
-    }
-  });
+    // Automatic Infinite Scroll Setup
+    document.addEventListener("DOMContentLoaded", () => {
+        const track = document.getElementById('infinite-track');
+        if (track) {
+            // Duplicate content to create a seamless loop
+            const content = track.innerHTML;
+            track.innerHTML += content;
+        }
+    });
 </script>
 <script src="/static/js/charts.js"></script>
 {% endblock %}

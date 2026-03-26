@@ -1,77 +1,178 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="contact-container"
-    style="display: flex; justify-content: center; align-items: center; min-height: 80vh; padding: 2rem;">
-    <div class="contact-card" style="
-        display: flex; 
-        flex-wrap: wrap; 
-        max-width: 1000px; 
-        width: 100%; 
-        background: rgba(15, 23, 42, 0.6); 
-        backdrop-filter: blur(12px); 
-        border: 1px solid rgba(255, 255, 255, 0.1); 
-        border-radius: 20px; 
-        overflow: hidden; 
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+<div class="contact-ultra-container" style="
+    background: #F6F5F1;
+    min-height: 100vh;
+    padding: 8rem 2rem;
+    color: #1C1C1C;
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+">
+    <!-- Main Heading Section -->
+    <div style="text-align: center; margin-bottom: 4rem;" class="fade-up">
+        <h1 style="
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(3.5rem, 8vw, 5.5rem);
+            font-weight: 900;
+            margin-bottom: 2rem;
+            color: #1C1C1C;
+            letter-spacing: -3px;
+        ">Let's Build Together.</h1>
+        <p style="
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 500px;
+            margin: 0 auto;
+            line-height: 1.6;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        ">Experience elite cybersecurity solutions tailored for your peace of mind.</p>
+    </div>
 
-        <!-- Form Section -->
-        <div class="contact-form-section" style="flex: 1; padding: 3rem; min-width: 300px;">
-            <h2 style="font-family: 'Orbitron', sans-serif; color: white; font-size: 2.5rem; margin-bottom: 2rem;">
-                Contact Us</h2>
+    <!-- Centered Form Container -->
+    <div class="contact-card-glass fade-up" style="
+        max-width: 850px;
+        width: 100%;
+        background: #FAFAF8;
+        border: 1px solid rgba(28, 28, 28, 0.05);
+        border-radius: 4px;
+        padding: 5rem;
+        color: #1C1C1C;
+        box-shadow: 0 30px 60px rgba(0,0,0,0.05);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    ">
+        <h2
+            style="font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 900; margin-bottom: 4rem; text-align: left; text-transform: uppercase; letter-spacing: 1px;">
+            Talk To Us</h2>
 
-            <form action="/contact" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <form action="/contact" method="POST" style="font-size: 1.3rem; line-height: 2.5; flex: 1;">
+            <div style="margin-bottom: 2rem;">
+                Hello, my name is
+                <input type="text" name="name" placeholder="Name" required class="inline-input" style="width: 200px;">
+                and my email address is
+                <input type="email" name="email" placeholder="Email" required class="inline-input"
+                    style="width: 250px;">.
+                <br>
+                I work at
+                <input type="text" name="company" placeholder="Company" class="inline-input" style="width: 200px;">
+                and I would like to chat about
+                <textarea name="message" placeholder="how we can help you stay secure..." required
+                    class="inline-textarea"></textarea>.
+            </div>
 
-                <div class="input-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label for="name" style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">Name</label>
-                    <input type="text" id="name" name="name" placeholder="Your Name" required
-                        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 16px; border-radius: 12px; color: white; font-family: 'Inter', sans-serif;">
-                </div>
-
-                <div class="input-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label for="email" style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">Email</label>
-                    <input type="email" id="email" name="email" placeholder="name@MalVisionAI.com" required
-                        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 16px; border-radius: 12px; color: white; font-family: 'Inter', sans-serif;">
-                </div>
-
-                <div class="input-group" style="display: flex; flex-direction: column; gap: 0.5rem;">
-                    <label for="message" style="color: #94a3b8; font-size: 0.9rem; font-weight: 500;">Message</label>
-                    <textarea id="message" name="message" rows="4" placeholder="How can we help you?" required
-                        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 12px 16px; border-radius: 12px; color: white; font-family: 'Inter', sans-serif; resize: vertical;"></textarea>
+            <div
+                style="margin-top: 4rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 2rem;">
+                <!-- CAPTCHA Placeholder -->
+                <div
+                    style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.8rem 1.2rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem;">
+                    <input type="checkbox" id="robot" style="width: 22px; height: 22px; cursor: pointer;">
+                    <label for="robot" style="font-size: 0.95rem; color: #64748b; cursor: pointer;">I'm not a
+                        robot</label>
+                    <img src="https://www.gstatic.com/recaptcha/api2/logo_48.png" alt="reCAPTCHA"
+                        style="width: 24px; opacity: 0.7; margin-left: 1rem;">
                 </div>
 
                 <button type="submit" style="
-                    background: #ec4899; 
-                    color: white; 
-                    border: none; 
-                    padding: 12px 24px; 
-                    border-radius: 50px; 
-                    font-weight: 600; 
-                    font-size: 1rem; 
-                    cursor: pointer; 
-                    transition: transform 0.2s, box-shadow 0.2s;
-                    align-self: flex-start;
-                    margin-top: 1rem;
-                    box-shadow: 0 4px 14px 0 rgba(236, 72, 153, 0.39);"
-                    onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 20px rgba(236, 72, 153, 0.23)'"
-                    onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 14px 0 rgba(236, 72, 153, 0.39)'">
-                    Submit
+                    background: #1C1C1C;
+                    color: #F6F5F1;
+                    border: none;
+                    padding: 1.3rem 3.5rem;
+                    border-radius: 4px;
+                    font-weight: 800;
+                    font-size: 0.9rem;
+                    text-transform: uppercase;
+                    letter-spacing: 2px;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 10px 20px rgba(28, 28, 28, 0.15);
+                " onmouseover="this.style.background='#333'; this.style.transform='translateY(-3px)'"
+                    onmouseout="this.style.background='#1C1C1C'; this.style.transform='translateY(0)'">
+                    Send Message
                 </button>
-            </form>
-        </div>
+            </div>
+        </form>
 
-        <!-- Illustration Section -->
-        <div class="contact-visual-section" style="
-            flex: 1; 
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1)); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            padding: 2rem;
-            min-width: 300px;">
-            <img src="/static/images/contact_illustration.png" alt="Customer Support"
-                style="max-width: 100%; height: auto; drop-shadow: 0 10px 20px rgba(0,0,0,0.3);">
+        <!-- Subtle Branding -->
+        <div
+            style="position: absolute; bottom: 2rem; right: 4.5rem; opacity: 0.1; font-weight: 800; letter-spacing: 2px; font-size: 0.8rem; pointer-events: none;">
+            MALVISION AI PROTOCOL
         </div>
     </div>
 </div>
+
+<style>
+    .inline-input {
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid #1C1C1C;
+        padding: 0 5px;
+        color: #1C1C1C;
+        font-size: inherit;
+        font-family: inherit;
+        transition: all 0.3s ease;
+        text-align: center;
+        border-radius: 0;
+    }
+
+    .inline-input::placeholder {
+        color: #BBB;
+        font-weight: 400;
+        font-style: normal;
+    }
+
+    .inline-input:focus {
+        outline: none;
+        border-bottom-width: 2px;
+        background: transparent;
+    }
+
+    .inline-textarea {
+        background: #F6F5F1;
+        border: 1px solid rgba(28, 28, 28, 0.1);
+        border-radius: 4px;
+        padding: 20px;
+        color: #1C1C1C;
+        font-size: 1.15rem;
+        font-family: inherit;
+        width: 100%;
+        min-height: 120px;
+        margin-top: 20px;
+        resize: vertical;
+        transition: all 0.3s ease;
+        line-height: 1.6;
+    }
+
+    .inline-textarea:focus {
+        outline: none;
+        border-color: #1C1C1C;
+        box-shadow: none;
+    }
+
+    @media (max-width: 768px) {
+        .contact-ultra-container {
+            padding: 4rem 1.5rem;
+        }
+
+        .contact-card-glass {
+            padding: 2.5rem !important;
+            border-radius: 30px;
+        }
+
+        .inline-input {
+            width: 100% !important;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        form {
+            font-size: 1.1rem !important;
+            line-height: normal !important;
+        }
+    }
+</style>
 {% endblock %}

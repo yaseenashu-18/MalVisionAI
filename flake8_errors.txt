@@ -1,0 +1,7 @@
+﻿app.py:89:1: E722 do not use bare 'except'
+app.py:156:53: E226 missing whitespace around arithmetic operator
+app.py:156:62: E226 missing whitespace around arithmetic operator
+app.py:297:13: E722 do not use bare 'except'
+app.py:393:13: E722 do not use bare 'except'
+app.py:522:22: E226 missing whitespace around arithmetic operator
+app.py:524:22: E226 missing whitespace around arithmetic operator

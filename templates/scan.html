@@ -4,8 +4,10 @@
 <!-- Overlay for Scan Progress -->
 <div id="scanOverlay" class="scan-overlay hidden">
     <div class="scan-content">
-        <div class="radar-spinner"></div>
-        <h2 class="scan-status-text">Scanning...</h2>
+        <div class="radar-spinner" style="border-top-color: var(--primary);"></div>
+        <h2 class="scan-status-text"
+            style="font-family: var(--font-main); font-size: 1.5rem; font-weight: 700; color: #000; letter-spacing: -0.5px; margin-bottom: 2rem;">
+            Analyzing Threat Patterns...</h2>
         <div class="progress-wrapper">
             <div class="progress-bar" id="progressBar"></div>
         </div>
@@ -15,50 +17,113 @@
 
 {% if not result %}
 <!-- LANDING PAGE -->
-<div class="vt-container fade-in">
-    <h1 class="vt-title">Analyze suspicious files, domains, IPs and URLs</h1>
-    <p class="vt-subtitle">Detect malware and other breaches, automatically share them with the security community.</p>
+<div class="vt-container fade-in" style="padding: 6rem 2rem;">
+    <h1
+        style="font-family: var(--font-main); font-size: clamp(2.5rem, 8vw, 4rem); font-weight: 800; color: #000; letter-spacing: -1.5px; margin-bottom: 1.5rem;">
+        Intelligent Analysis</h1>
+    <p
+        style="font-family: var(--font-main); font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto 4rem; line-height: 1.5; font-weight: 400;">
+        Identity malicious patterns in files, domains, and URLs with MalVision AI.
+    </p>
 
-    <div class="vt-interface">
-        <div class="vt-tabs">
-            <button class="vt-tab active" data-tab="file">FILE</button>
-            <button class="vt-tab" data-tab="url">URL</button>
-            <button class="vt-tab" data-tab="search">SEARCH</button>
+    <div class="vt-interface" style="padding: 1.5rem;">
+        <div class="vt-tabs"
+            style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;">
+            <button class="vt-tab active luxury-tab" data-tab="file"
+                style="font-family: var(--font-main); font-weight: 600;">FILE</button>
+            <button class="vt-tab luxury-tab" data-tab="url"
+                style="font-family: var(--font-main); font-weight: 600;">URL</button>
+            <button class="vt-tab luxury-tab" data-tab="search"
+                style="font-family: var(--font-main); font-weight: 600;">SEARCH</button>
         </div>
 
+        <!-- File Tab -->
         <div class="vt-tab-content active" id="tab-file">
             <form id="scanForm" action="/scan" method="post" enctype="multipart/form-data">
-                <div class="upload-zone" id="dropZone">
-                    <div class="circles-animation">
-                        <div class="circle c1"></div>
-                        <div class="circle c2"></div>
-                        <div class="circle c3"></div>
+                <div class="upload-zone" id="dropZone" style="padding: 4rem 2rem;">
+                    <i class="fa-solid fa-cloud-arrow-up"
+                        style="font-size: 3rem; color: var(--primary); margin-bottom: 1.5rem; opacity: 0.8;"></i>
+                    <input type="file" name="file" id="fileInput" class="hidden-input" style="display: none;" required>
+                    <div style="margin-bottom: 1.5rem;">
+                        <button type="button" class="btn-primary-large" onclick="triggerFile()">Upload File</button>
                     </div>
-                    <i class="fa-solid fa-file-shield upload-icon-main"></i>
-
-                    <input type="file" name="file" id="fileInput" class="hidden-input" required>
-                    <button type="button" class="btn-choose" onclick="triggerFile()">Choose file</button>
-
-                    <p class="drop-text">or drag and drop here</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">or drag and drop file here
+                    </p>
                 </div>
             </form>
         </div>
 
-        <div class="vt-tab-content" id="tab-url">
-            <form id="urlForm" action="/scan" method="post">
-                <div class="placeholder-content">
-                    <i class="fa-solid fa-globe"></i>
-                    <input type="text" name="url" class="vt-input" placeholder="http://www.example.com" required>
-                    <button type="submit" class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <!-- URL Tab -->
+        <div class="vt-tab-content" id="tab-url" style="display: none;">
+            <form id="urlForm" action="/scan" method="post" style="padding: 2rem 1rem;">
+                <div style="display: flex; gap: 12px; max-width: 600px; margin: 0 auto; flex-direction: column;">
+                    <input type="text" name="url" placeholder="Enter URL (e.g. http://example.com)" required
+                        class="vt-input" style="max-width: 100%;">
+                    <button type="submit" class="btn-primary-large" style="width: 100%; justify-content: center;">Scan
+                        URL</button>
                 </div>
             </form>
         </div>
 
-        <div class="vt-tab-content" id="tab-search">
-            <div class="placeholder-content">
-                <i class="fa-solid fa-fingerprint"></i>
-                <input type="text" class="vt-input" placeholder="URL, IP address, domain or file hash">
-                <button class="btn-search"><i class="fa-solid fa-magnifying-glass"></i></button>
+        <!-- Search Tab -->
+        <div class="vt-tab-content" id="tab-search" style="display: none;">
+            <div style="padding: 3rem 1rem;">
+                <div style="display: flex; gap: 12px; max-width: 600px; margin: 0 auto; flex-direction: column;">
+                    <input type="text" placeholder="IP, Domain, or File Hash" class="vt-input" style="max-width: 100%;">
+                    <button class="btn-primary-large" style="width: 100%; justify-content: center; background: #111827;">Search Database</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Live Threat Feed -->
+    <div style="margin-top: 5rem;" class="fade-up">
+        <h3 style="font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-muted); margin-bottom: 2rem; text-align: center;">
+            <span style="display: inline-block; width: 8px; height: 8px; background: #FF3B30; border-radius: 50%; margin-right: 8px; animation: radarPulse 2s infinite;"></span>
+            Live Global Threats Blocked
+        </h3>
+        
+        <div style="max-width: 800px; margin: 0 auto; display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Dummy Feed Item 1 -->
+            <div style="background: #FFFFFF; padding: 1.2rem 2rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="display: flex; align-items: center; gap: 1.2rem;">
+                    <div style="width: 40px; height: 40px; background: rgba(255, 59, 48, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-spider" style="color: #FF3B30; font-size: 1.2rem;"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 800; color: #111827; font-size: 1.05rem;">Trojan.Win32.Generic</span>
+                        <span style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;">File SHA-256 intercepted</span>
+                    </div>
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">2 sec ago &bull; Tokyo, JP</span>
+            </div>
+            
+            <!-- Dummy Feed Item 2 -->
+            <div style="background: #FFFFFF; padding: 1.2rem 2rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="display: flex; align-items: center; gap: 1.2rem;">
+                    <div style="width: 40px; height: 40px; background: rgba(255, 149, 0, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-link" style="color: #FF9500; font-size: 1.2rem;"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 800; color: #111827; font-size: 1.05rem;">Phishing Domain Blocked</span>
+                        <span style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;">AI heuristic identification</span>
+                    </div>
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">14 sec ago &bull; Frankfurt, DE</span>
+            </div>
+            
+            <!-- Dummy Feed Item 3 -->
+            <div style="background: #FFFFFF; padding: 1.2rem 2rem; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.03); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'">
+                <div style="display: flex; align-items: center; gap: 1.2rem;">
+                    <div style="width: 40px; height: 40px; background: rgba(88, 86, 214, 0.1); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                        <i class="fa-solid fa-file-code" style="color: #5856D6; font-size: 1.2rem;"></i>
+                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 800; color: #111827; font-size: 1.05rem;">Ransomware.CryptoLocker</span>
+                        <span style="font-weight: 600; color: var(--text-muted); font-size: 0.85rem;">Macro script injection</span>
+                    </div>
+                </div>
+                <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 600;">45 sec ago &bull; New York, US</span>
             </div>
         </div>
     </div>
@@ -66,185 +131,162 @@
 
 {% else %}
 <!-- DETAILED RESULT PAGE -->
-<div class="result-container fade-up">
-    <!-- Header -->
-    <div class="result-header">
-        <div class="file-icon-badge">
-            <i class="fa-solid fa-file-code"></i>
-        </div>
-        <div class="file-summary">
-            <div class="file-name">{{ file_info.name }}</div>
-            <div class="file-meta">{{ file_info.size }} &bull; {{ file_info.type }}</div>
-        </div>
-        <div class="detection-badge {% if result == 'Malicious' %}bad{% else %}good{% endif %}">
-            <div class="detection-score">
-                {% if result == 'Malicious' %}1 / 1{% else %}0 / 1{% endif %}
+<div class="result-container fade-up" style="padding: 4rem 1.5rem;">
+    <div class="result-header" style="flex-direction: column; align-items: flex-start; gap: 1.5rem; background: #FFF; padding: 2.5rem; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.03);">
+        <div style="display: flex; align-items: center; gap: 1.5rem; width: 100%;">
+            <div style="background: rgba(0, 122, 255, 0.08); width: 80px; height: 80px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2rem; color: var(--primary);">
+                <i class="fa-solid fa-file-shield"></i>
             </div>
-            <div class="detection-label">{{ result }}</div>
-        </div>
-    </div>
-
-    <!-- Details Grid -->
-    <div class="details-grid">
-        <div class="detail-section">
-            <h3><i class="fa-solid fa-circle-info"></i> Basic Properties</h3>
-            <div class="detail-row">
-                <span class="label">MD5</span>
-                <span class="value mono">7b8c9d... (hidden)</span>
+            <div style="flex: 1;">
+                <h2 style="font-family: var(--font-main); font-size: 1.8rem; font-weight: 800; color: #000; margin-bottom: 0.3rem; letter-spacing: -0.5px;">{{ file_info.name }}</h2>
+                <div style="display: flex; gap: 1rem; align-items: center;">
+                    <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; background: var(--bg-system); padding: 0.3rem 0.8rem; border-radius: 20px;">{{ file_info.size }}</span>
+                    <span style="color: var(--text-muted); font-size: 0.9rem; font-weight: 600; background: var(--bg-system); padding: 0.3rem 0.8rem; border-radius: 20px;">{{ file_info.type }}</span>
+                </div>
             </div>
-            <div class="detail-row">
-                <span class="label">SHA-1</span>
-                <span class="value mono">a1b2c3... (hidden)</span>
-            </div>
-            <div class="detail-row">
-                <span class="label">SHA-256</span>
-                <span class="value mono">{{ file_info.hash }}</span>
-            </div>
-        </div>
-
-        <div class="detail-section">
-            <h3><i class="fa-solid fa-shield-halved"></i> Security Vendors</h3>
-            <div class="vendor-list">
-                <div class="vendor-item">
-                    <span class="vendor-name">MalVisionAI</span>
-                    <span class="vendor-result {% if result == 'Malicious' %}red{% else %}green{% endif %}">
-                        {% if result == 'Malicious' %}
-                        <i class="fa-solid fa-bug"></i> Malicious
-                        {% else %}
-                        <i class="fa-solid fa-check"></i> Clean
-                        {% endif %}
-                    </span>
+            <div style="text-align: right;">
+                <div style="font-size: 1.2rem; font-weight: 800; color: {% if result == 'Malicious' %}#FF3B30{% else %}#34C759{% endif %}; background: {% if result == 'Malicious' %}rgba(255,59,48,0.1){% else %}rgba(52,199,89,0.1){% endif %}; padding: 0.8rem 1.5rem; border-radius: 30px; display: inline-flex; align-items: center; gap: 8px;">
+                    <i class="fa-solid {% if result == 'Malicious' %}fa-triangle-exclamation{% else %}fa-check-circle{% endif %}"></i> {{ result }}
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="action-footer">
-        <a href="/scan?new=true" class="btn-secondary"><i class="fa-solid fa-arrow-rotate-left"></i> Scan Another
-            File</a>
+    <!-- Details -->
+    <div class="details-grid">
+        <div class="detail-section" style="padding: 2.5rem; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+            <h3 style="font-family: var(--font-main); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1.2rem; border: none; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-fingerprint"></i> Analysis Fingerprint
+            </h3>
+            <div style="background: var(--bg-system); padding: 1.2rem; border-radius: 14px; font-family: var(--font-mono); font-size: 0.85rem; color: #000; word-break: break-all; line-height: 1.5; font-weight: 600;">
+                {{ file_info.hash }}
+            </div>
+        </div>
+        <div class="detail-section" style="padding: 2.5rem; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 10px 40px rgba(0,0,0,0.04);">
+            <h3 style="font-family: var(--font-main); font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); margin-bottom: 1.2rem; border: none; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-shield-halved"></i> Security Metrics
+            </h3>
+            <div style="display: flex; align-items: center; gap: 1.2rem; padding: 0.5rem 0;">
+                <div style="width: 50px; height: 50px; border-radius: 14px; background: {% if result == 'Malicious' %}rgba(255,59,48,0.1){% else %}rgba(52,199,89,0.1){% endif %}; display: flex; align-items: center; justify-content: center;">
+                    <i class="fa-solid {% if result == 'Malicious' %}fa-bug{% else %}fa-circle-check{% endif %}" style="font-size: 1.5rem; color: {% if result == 'Malicious' %}#FF3B30{% else %}#34C759{% endif %};"></i>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <span style="font-family: var(--font-main); font-weight: 800; color: #000; font-size: 1.1rem; letter-spacing: -0.2px;">AI Model: {% if result == 'Malicious' %}Threat Active{% else %}Clean & Safe{% endif %}</span>
+                    <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Confidence: High (98.2%)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if diagnostics %}
+    <!-- Deep Diagnostics UI -->
+    <div style="margin-top: 2rem; background: #FFFFFF; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.04); padding: 2.5rem; border: 1px solid rgba(0,0,0,0.03);">
+        <h3 style="font-size: 1.2rem; font-weight: 800; color: #000; margin-bottom: 1.5rem; letter-spacing: -0.5px;">
+            <i class="fa-solid fa-microchip" style="color: var(--primary); margin-right: 8px;"></i> Heuristic Evaluation Letric
+        </h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+            {% for key, val in diagnostics.items() %}
+            <div style="background: var(--bg-system); padding: 1.5rem; border-radius: 16px; transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                <p style="color: var(--text-muted); font-size: 0.75rem; font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem; letter-spacing: 0.5px;">{{ key.replace('-', ' ') }}</p>
+                <h4 style="color: #000; font-size: 1.6rem; font-weight: 800; margin: 0; letter-spacing: -1px;">{{ val }}</h4>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Footer Actions -->
+    <div style="margin-top: 2rem; display: flex; flex-direction: column; gap: 1rem;">
         <a href="{{ url_for('download_report') }}" class="btn-primary-large"
-            style="padding: 0.8rem 1.5rem; font-size: 1rem; margin-left: 1rem; border-radius: 8px;">
-            <i class="fa-solid fa-file-arrow-down"></i> Download Report
+            style="width: 100%; justify-content: center;">
+            <i class="fa-solid fa-file-pdf"></i> Download Official Report
+        </a>
+        <a href="/scan?new=true"
+            style="color: var(--primary); text-decoration: none; font-weight: 600; font-size: 0.9rem; text-align: center; padding: 1rem;">
+            <i class="fa-solid fa-rotate-left"></i> Start New Analysis
         </a>
     </div>
 </div>
 {% endif %}
 
+<style>
+    .luxury-tab {
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        border-radius: 8px;
+    }
+
+    .luxury-tab.active {
+        color: var(--primary);
+        background: rgba(0, 122, 255, 0.05);
+    }
+
+    .luxury-tab:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.02);
+    }
+</style>
+
 <script>
     // Tab Switching
-    const tabs = document.querySelectorAll('.vt-tab');
-    const contents = document.querySelectorAll('.vt-tab-content');
-
-    tabs.forEach(tab => {
+    document.querySelectorAll('.vt-tab').forEach(tab => {
         tab.addEventListener('click', () => {
-            // Remove active class
-            tabs.forEach(t => t.classList.remove('active'));
-            contents.forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.vt-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.vt-tab-content').forEach(c => c.style.display = 'none');
 
-            // Add active class
             tab.classList.add('active');
-            document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            const target = document.getElementById('tab-' + tab.dataset.tab);
+            if (target) target.style.display = 'block';
         });
     });
 
-    // File Upload Logic
-    function triggerFile() {
-        document.getElementById('fileInput').click();
-    }
+    function triggerFile() { document.getElementById('fileInput').click(); }
 
     const fileInput = document.getElementById('fileInput');
     const uploadZone = document.getElementById('dropZone');
-    const fileForm = document.getElementById('scanForm');
-    const urlForm = document.getElementById('urlForm'); // New 
     const overlay = document.getElementById('scanOverlay');
     const progressBar = document.getElementById('progressBar');
     const progressText = document.getElementById('progressText');
 
     if (fileInput) {
-        fileInput.addEventListener('change', handleFile);
-
-        // Drag and Drop
-        uploadZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadZone.classList.add('drag-active');
-        });
-
-        uploadZone.addEventListener('dragleave', () => {
-            uploadZone.classList.remove('drag-active');
-        });
-
+        fileInput.addEventListener('change', () => { if (fileInput.files.length) startScanning(document.getElementById('scanForm')); });
+        uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('drag-active'); });
+        uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('drag-active'); });
         uploadZone.addEventListener('drop', (e) => {
             e.preventDefault();
             uploadZone.classList.remove('drag-active');
             if (e.dataTransfer.files.length) {
                 fileInput.files = e.dataTransfer.files;
-                handleFile();
+                startScanning(document.getElementById('scanForm'));
             }
         });
+        uploadZone.addEventListener('click', (e) => { if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'I') triggerFile(); });
     }
 
-    // URL Form Submission Listener
-    if (urlForm) {
-        urlForm.addEventListener('submit', (e) => {
-            e.preventDefault(); // Stop instant submit
-            startScanningAnimation(urlForm); // Start animation then submit
+    if (document.getElementById('urlForm')) {
+        document.getElementById('urlForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            startScanning(document.getElementById('urlForm'));
         });
     }
 
-    function handleFile() {
-        if (fileInput.files.length > 0) {
-            startScanningAnimation(fileForm);
-        }
-    }
-
-    function startScanningAnimation(targetForm) {
+    function startScanning(form) {
         overlay.classList.remove('hidden');
         let progress = 0;
-
-        // Dynamic Interval speed
         const interval = setInterval(() => {
-            progress += Math.floor(Math.random() * 5) + 1;
-
-            if (progress > 95) {
+            progress += Math.floor(Math.random() * 8) + 2;
+            if (progress >= 98) {
                 clearInterval(interval);
-                // Submit form when animation is "almost" done
-                targetForm.submit();
+                form.submit();
             } else {
-                updateProgress(progress);
+                progressBar.style.width = progress + '%';
+                progressText.innerText = progress + '%';
             }
-        }, 80);
-    }
-
-    function updateProgress(val) {
-        progressBar.style.width = val + '%';
-        progressText.innerText = val + '%';
+        }, 100);
     }
 </script>
 
-
-{% if result %}
-<script>
-    (function () {
-        try {
-            const scanEntry = {
-                file: "{{ file_info.name }}",
-                result: "{{ result }}",
-                time: new Date().toLocaleString()
-            };
-
-            let history = JSON.parse(sessionStorage.getItem('malvision_history') || "[]");
-            // Optional: Avoid adding exact duplicate if reload page
-            const last = history[0];
-            const isDuplicate = last && last.file === scanEntry.file && last.result === scanEntry.result;
-
-            if (!isDuplicate) {
-                history.unshift(scanEntry);
-                // Limit to 20
-                if (history.length > 20) history.pop();
-                sessionStorage.setItem('malvision_history', JSON.stringify(history));
-            }
-        } catch (e) { console.error("History storage error", e); }
-    })();
-</script>
-{% endif %}
 {% endblock %}

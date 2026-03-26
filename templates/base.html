@@ -7,7 +7,7 @@
     <title>MalVisionAI</title>
     <!-- Google Fonts -->
     <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@400;500;600;700&display=swap"
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
         rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -21,9 +21,9 @@
 <body>
     <!-- PRELOADER -->
     <div id="global-preloader"
-        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;">
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #F6F5F1; z-index: 99999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s;">
         <div
-            style="width: 50px; height: 50px; border: 3px solid rgba(99, 102, 241, 0.3); border-radius: 50%; border-top-color: #6366f1; animation: spin 1s ease-in-out infinite;">
+            style="width: 50px; height: 50px; border: 3px solid rgba(28, 28, 28, 0.05); border-radius: 50%; border-top-color: #1C1C1C; animation: spin 1s linear infinite;">
         </div>
     </div>
     <script>
@@ -58,33 +58,38 @@
         }
     </style>
 
-    <div class="background-globes">
-        <div class="globe globe-1"></div>
-        <div class="globe globe-2"></div>
-        <div class="globe globe-3"></div>
+    <div class="luxury-bg-accents"
+        style="position: fixed; inset: 0; pointer-events: none; z-index: -1; overflow: hidden; background: #F2F2F7;">
+        <div
+            style="position: absolute; top: -10%; right: -5%; width: 50vw; height: 50vw; background: radial-gradient(circle, rgba(0, 122, 255, 0.03) 0%, transparent 70%);">
+        </div>
+        <div
+            style="position: absolute; bottom: -5%; left: -5%; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(0, 122, 255, 0.02) 0%, transparent 70%);">
+        </div>
     </div>
 
     <nav class="glass-nav">
         <!-- New Logo Design -->
         <a href="/" class="nav-logo" style="display: flex; align-items: center; gap: 12px; text-decoration: none;">
             <div
-                style="background: linear-gradient(135deg, #6366f1, #a855f7); width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);">
-                <i class="fa-solid fa-file-shield" style="color: white; font-size: 20px;"></i>
+                style="background: var(--primary); width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);">
+                <i class="fa-solid fa-file-shield" style="color: #FFF; font-size: 18px;"></i>
             </div>
-            <div style="display: flex; flex-direction: column; line-height: 1.2;">
+            <div style="display: flex; flex-direction: column; line-height: 1.1;">
                 <span
-                    style="font-family: 'Inter', sans-serif; font-weight: 700; font-size: 1.2rem; background: linear-gradient(90deg, #818cf8, #c084fc); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">Malvision
+                    style="font-family: var(--font-main); font-weight: 700; font-size: 1.2rem; color: #000; letter-spacing: -0.5px;">Malvision
                     AI</span>
                 <span
-                    style="font-family: 'Inter', sans-serif; font-size: 0.75rem; color: #64748b; font-weight: 500;">Advanced
-                    Threat Detection</span>
+                    style="font-family: var(--font-main); font-size: 0.6rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Elite
+                    Protection</span>
             </div>
         </a>
 
         <div class="nav-links" style="display: flex; align-items: center; gap: 20px;">
 
             <!-- Standard Navigation (Visible to Everyone) -->
-            <a href="/" class="nav-item active"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="/" class="nav-item"><i class="fa-solid fa-chart-line"></i> Dashboard</a>
+            <a href="/scan" class="nav-item"><i class="fa-solid fa-microscope"></i> Scanner</a>
             {% if not user %}
             <a href="/history" class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i> History</a>
             {% endif %}
@@ -97,8 +102,10 @@
                 <a href="/profile" title="View Profile"
                     style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                     <img src="{{ user.picture }}" alt="User"
-                        style="width: 36px; height: 36px; border-radius: 50%; border: 2px solid #6366f1;">
-                    <span style="font-size: 0.9rem; font-weight: 500; color: #cbd5e1;">{{ user.name }}</span>
+                        style="width: 36px; height: 36px; border-radius: 4px; border: 1px solid #1C1C1C;">
+                    <span
+                        style="font-size: 0.9rem; font-weight: 700; color: #1C1C1C; text-transform: uppercase; letter-spacing: 0.5px;">{{
+                        user.name }}</span>
                 </a>
 
                 <a href="/logout" style="
@@ -121,37 +128,39 @@
             {% else %}
             <!-- Public Site Navigation (Logged Out) -->
             <a href="/login"
-                style="color: #cbd5e1; font-weight: 500; text-decoration: none; font-size: 0.95rem; transition: color 0.2s;">Log
+                style="color: #666; font-weight: 500; text-decoration: none; font-size: 0.9rem; transition: color 0.3s; letter-spacing: 0.5px;">Log
                 in</a>
 
             <a href="/contact" style="
                     background: transparent;
-                    border: 1px solid #475569;
-                    color: #e2e8f0;
-                    padding: 0.5rem 1rem;
-                    border-radius: 6px;
+                    border: 1px solid #1C1C1C;
+                    color: #1C1C1C;
+                    padding: 0.6rem 1.2rem;
+                    border-radius: 4px;
                     font-weight: 600;
-                    font-size: 0.9rem;
+                    font-size: 0.85rem;
                     text-decoration: none;
-                    transition: all 0.2s;
-                 " onmouseover="this.style.borderColor='#94a3b8'; this.style.color='white'"
-                onmouseout="this.style.borderColor='#475569'; this.style.color='#e2e8f0'">
+                    transition: all 0.3s;
+                    letter-spacing: 0.5px;
+                 " onmouseover="this.style.background='#1C1C1C'; this.style.color='#F6F5F1'"
+                onmouseout="this.style.background='transparent'; this.style.color='#1C1C1C'">
                 Contact
             </a>
 
             <a href="/signup" style="
-                    background: #fff;
-                    color: #000;
-                    padding: 0.5rem 1rem;
-                    border-radius: 6px;
-                    font-weight: 700;
-                    font-size: 0.9rem;
+                    background: #1C1C1C;
+                    color: #F6F5F1;
+                    padding: 0.6rem 1.5rem;
+                    border-radius: 4px;
+                    font-weight: 600;
+                    font-size: 0.85rem;
                     text-decoration: none;
-                    transition: all 0.2s;
-                    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                    transition: all 0.3s;
+                    box-shadow: 0 5px 15px rgba(28,28,28,0.2);
+                    letter-spacing: 0.5px;
                  "
-                onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 6px 12px rgba(255,255,255,0.2)'"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 6px rgba(0,0,0,0.1)'">
+                onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 20px rgba(28,28,28,0.3)'"
+                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 5px 15px rgba(28,28,28,0.2)'">
                 Get Started
             </a>
             {% endif %}
